@@ -7,44 +7,37 @@ export const useJoinAsHost = (MrMatch: MatchMaker) => {
         if (!interaction.isChatInputCommand()) {
             return;
         }
-        if (interaction.commandName === 'join-as-host') {
-            const host = interaction.options.getString('name');
-            if (host === null) return;
 
-            const roomCode = interaction.options.getString('roomcode');
-            if (roomCode === null) return;
+        const host = interaction.options.getString('name', true);
+        const roomCode = interaction.options.getString('roomcode', true);
+        const format = interaction.options.getString('format', true);
+        const patchCards = interaction.options.getBoolean('patchcards', true);
+        const region = interaction.options.getString('region', true);
 
-            const format = interaction.options.getString('format');
-            if (format === null) return;
+        const options = {
+            format: stringToEnumValue(format),
+            patchCards: patchCards,
+            game: 6,
+            region: region
+        };
 
-            const patchCards = interaction.options.getBoolean('patchcards');
-            if (patchCards === null) return;
-
-            const region = interaction.options.getString('region');
-            if (region === null) return;
-
-            const options = {
-                format: stringToEnumValue(format),
-                patchCards: patchCards,
-                game: 6,
-                region: region
-            };
-
-            MrMatch.joinAsHost(host, roomCode, options);
-            interaction.reply({ content: `added ${host} to queue`});
-            console.log(`Match Appended ${host} ${roomCode} ${JSON.stringify(options)}`);
-            return;
-        }
+        MrMatch.joinAsHost(host, roomCode, options);
+        interaction.reply({ content: `added ${host} to queue`});
+        console.log(`Match Appended ${host} ${roomCode} ${JSON.stringify(options)}`);
     }
 
 
     const metadata = new SlashCommandBuilder()
         .setName('join-as-host')
         .setDescription('host a game')
-        .addStringOption((option) => option.setName('name').setDescription('your discord name').setRequired(true))
-        .addStringOption((option) => option.setName('roomcode').setDescription('your room code').setRequired(true))
-        .addBooleanOption((option) => option.setName('patchcards').setDescription('enable patch cards?').setRequired(true))
-        .addStringOption((option) => option.setName('format').setDescription('battle format').setRequired(true)
+        .addStringOption((option) => option.setName('name').setDescription('your discord name')
+            .setRequired(true))
+        .addStringOption((option) => option.setName('roomcode').setDescription('your room code')
+            .setRequired(true))
+        .addBooleanOption((option) => option.setName('patchcards').setDescription('enable patch cards?')
+            .setRequired(true))
+        .addStringOption((option) => option.setName('format').setDescription('battle format')
+            .setRequired(true)
             .setChoices(
                 {
                     name: 'triples',
@@ -55,7 +48,8 @@ export const useJoinAsHost = (MrMatch: MatchMaker) => {
                     value: 'singles'
                 }
             ))
-        .addStringOption((option) => option.setName('region').setDescription('where are you playing from?').setRequired(true));
+        .addStringOption((option) => option.setName('region').setDescription('where are you playing from?')
+            .setRequired(true));
     
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }

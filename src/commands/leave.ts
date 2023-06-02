@@ -7,14 +7,10 @@ export const useLeave = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const name = interaction.options.getString('name');
-        if (name === null) {
-            return;
-        }
-
+        const name = interaction.options.getString('name', true);
         MrMatch.leaveList(name);
-
         interaction.reply({ content: `${name} has left the list`});
+        console.log(`marked ${name} as no longer waiting`);
     };
 
     const metadata = new SlashCommandBuilder()

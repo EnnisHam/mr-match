@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Routes } from 'discord.js';
+import { Client, Events, GatewayIntentBits, Routes } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import dotenv from 'dotenv';
 
@@ -35,7 +35,13 @@ async function main() {
 
     const rest = new REST({version: '10'}).setToken(TOKEN!);
 
-    client.on('ready', () => console.log('bot is online'));
+    client.once(Events.ClientReady, c => {
+        console.log(`Logged in as ${c.user.tag}`);
+    });
+    client.on('error', (error) => console.error(`Error: ${error}`));
+    client.on('rateLimit', () => console.log('rate limit exceeded'));
+    client.on('apiRequest', (req) => console.log(`requesting ${req}`));
+    client.on('apiResponse', (res) => console.log(`response ${res}`));
 
     const [joinAsHostHandler, joinAsHostCommand ] = useJoinAsHost(MrMatch);
     const [joinAsGuestHandler, joinAsGuestCommand ] = useJoinAsGuest(MrMatch);
@@ -50,18 +56,21 @@ async function main() {
         if (!interaction.isChatInputCommand()) return;
         const commandName = interaction.commandName;
 
+        console.log(`dispatching ${commandName}`);
+
         if (commandName === 'join-as-host') joinAsHostHandler(interaction);
         if (commandName === 'join-as-guest') joinAsGuestHandler(interaction);
         if (commandName === 'join') directJoinHandler(interaction);
+        if (commandName === 'leave') leaveHandler(interaction);
+
+        if (['join-as-host', 'join-as-guest', 'join', 'leave'].includes(commandName)) {
+            MrMatch.cleanUp();
+        }
+
         if (commandName === 'list-rooms') listRoomsHandler(interaction);
         if (commandName === 'list-hosts') listHostsHandler(interaction);
         if (commandName === 'list-guests') listGuestsHandler(interaction);
         if (commandName === 'list-players') listPlayersHandler(interaction);
-        if (commandName === 'leave') leaveHandler(interaction);
-        
-        if (['join-as-host', 'join-as-guest', 'join', 'leave'].includes(commandName)) {
-            MrMatch.cleanUp();
-        }
     });
 
     const commands = [

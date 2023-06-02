@@ -7,17 +7,11 @@ export const useDirectJoin = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const name = interaction.options.getString('name');
-        if (name === null) {
-            return;
-        }
-
-        const roomCode = interaction.options.getString('roomcode')
-        if (roomCode === null) {
-            return;
-        }
+        const name = interaction.options.getString('name', true);
+        const roomCode = interaction.options.getString('roomcode', true);
 
         MrMatch.joinDirect(name, roomCode);
+        console.log(`${name} joining ${roomCode}`)
     };
 
     const metadata = new SlashCommandBuilder()
