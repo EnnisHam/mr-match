@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { MatchMaker } from './classes/MatchMaker';
 import { useJoinAsHost } from './commands/joinAsHost';
 import { useJoinAsGuest } from './commands/joinAsGuest';
+import { useDirectJoin } from './commands/directJoin';
 import { useLeave } from './commands/leave';
 import { useListRooms } from './commands/listRooms';
 import { useListGuests, useListHosts, useListPlayers } from './commands/listPlayers';
@@ -38,6 +39,7 @@ async function main() {
 
     const [joinAsHostHandler, joinAsHostCommand ] = useJoinAsHost(MrMatch);
     const [joinAsGuestHandler, joinAsGuestCommand ] = useJoinAsGuest(MrMatch);
+    const [directJoinHandler, directJoinCommand] = useDirectJoin(MrMatch);
     const [listRoomsHandler, listRoomsCommand] = useListRooms(MrMatch);
     const [listGuestsHandler, listGuestsCommand] = useListGuests(MrMatch);
     const [listHostsHandler, listHostsCommand] = useListHosts(MrMatch);
@@ -50,18 +52,22 @@ async function main() {
 
         if (commandName === 'join-as-host') joinAsHostHandler(interaction);
         if (commandName === 'join-as-guest') joinAsGuestHandler(interaction);
+        if (commandName === 'join') directJoinHandler(interaction);
         if (commandName === 'list-rooms') listRoomsHandler(interaction);
         if (commandName === 'list-hosts') listHostsHandler(interaction);
         if (commandName === 'list-guests') listGuestsHandler(interaction);
         if (commandName === 'list-players') listPlayersHandler(interaction);
         if (commandName === 'leave') leaveHandler(interaction);
         
-        if (['join-as-host', 'join-as-guest', 'leave'].includes(commandName)) MrMatch.cleanUp();
+        if (['join-as-host', 'join-as-guest', 'join', 'leave'].includes(commandName)) {
+            MrMatch.cleanUp();
+        }
     });
 
     const commands = [
         { ...joinAsHostCommand },
         { ...joinAsGuestCommand },
+        { ...directJoinCommand },
         { ...leaveCommand },
         { ...listRoomsCommand },
         { ...listHostsCommand },
