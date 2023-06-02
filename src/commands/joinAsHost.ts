@@ -8,7 +8,7 @@ export const useJoinAsHost = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const host = interaction.options.getString('name', true);
+        const host = interaction.user.username;
         const roomCode = interaction.options.getString('roomcode', true);
         const format = interaction.options.getString('format', true);
         const patchCards = interaction.options.getBoolean('patchcards', true);
@@ -30,8 +30,6 @@ export const useJoinAsHost = (MrMatch: MatchMaker) => {
     const metadata = new SlashCommandBuilder()
         .setName('join-as-host')
         .setDescription('host a game')
-        .addStringOption((option) => option.setName('name').setDescription('your discord name')
-            .setRequired(true))
         .addStringOption((option) => option.setName('roomcode').setDescription('your room code')
             .setRequired(true))
         .addBooleanOption((option) => option.setName('patchcards').setDescription('enable patch cards?')
