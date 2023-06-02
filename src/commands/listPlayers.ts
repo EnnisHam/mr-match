@@ -1,5 +1,5 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js"
-import { MatchMaker } from "../objects/MatchMaker";
+import { MatchMaker } from "../classes/MatchMaker";
 
 export const useListPlayers = (MrMatch: MatchMaker) => {
     const handler = (interaction: Interaction) => {

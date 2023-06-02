@@ -2,7 +2,7 @@ import { Client, GatewayIntentBits, Routes } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import dotenv from 'dotenv';
 
-import { MatchMaker } from './objects/MatchMaker';
+import { MatchMaker } from './classes/MatchMaker';
 import { useJoinAsHost } from './commands/joinAsHost';
 import { useJoinAsGuest } from './commands/joinAsGuest';
 import { useLeave } from './commands/leave';

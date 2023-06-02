@@ -1,6 +1,6 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js"
 import { RoomOptions, stringToEnumValue } from '../types/match';
-import { MatchMaker } from "../objects/MatchMaker";
+import { MatchMaker } from "../classes/MatchMaker";
 
 export const useListRooms = (MrMatch: MatchMaker) => {
     const handler = async (interaction: Interaction) => {

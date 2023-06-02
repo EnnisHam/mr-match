@@ -1,6 +1,6 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js"
 import { stringToEnumValue } from '../types/match';
-import { MatchMaker } from "../objects/MatchMaker";
+import { MatchMaker } from "../classes/MatchMaker";
 
 export const useJoinAsHost = (MrMatch: MatchMaker) => {
     const handler = (interaction: Interaction) => {
