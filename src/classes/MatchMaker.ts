@@ -1,11 +1,5 @@
 import { IMatch, RoomOptions, IPlayer } from "src/types/match";
 
-export const enum ListPlayers {
-    both,
-    host,
-    guests
-};
-
 export class MatchMaker {
     constructor() {}
 
