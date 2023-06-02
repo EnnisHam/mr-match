@@ -8,7 +8,7 @@ export const useJoinAsGuest = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const guest = interaction.options.getString('name', true);
+        const guest = interaction.user.username;
         const roomCode = interaction.options.getString('roomcode');
 
         if (roomCode) {
@@ -35,8 +35,6 @@ export const useJoinAsGuest = (MrMatch: MatchMaker) => {
     const metadata = new SlashCommandBuilder()
         .setName('join-as-guest')
         .setDescription('join a room')
-        .addStringOption((option) => option.setName('name').setDescription('your discord name')
-            .setRequired(true))
         .addBooleanOption((option) => option.setName('patchcards').setDescription('enable patch cards?')
             .setRequired(true))
         .addStringOption((option) => option.setName('format').setDescription('battle format')

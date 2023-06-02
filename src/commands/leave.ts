@@ -7,7 +7,7 @@ export const useLeave = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const name = interaction.options.getString('name', true);
+        const name = interaction.user.username;
         MrMatch.leaveList(name);
         interaction.reply({ content: `${name} has left the list`});
         console.log(`marked ${name} as no longer waiting`);
@@ -15,12 +15,7 @@ export const useLeave = (MrMatch: MatchMaker) => {
 
     const metadata = new SlashCommandBuilder()
         .setName('leave')
-        .setDescription('leave list')
-        .addStringOption(
-            (option) => option.setName('name')
-                .setDescription('your discord name')
-                .setRequired(true)
-        );
+        .setDescription('leave list');
 
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }
