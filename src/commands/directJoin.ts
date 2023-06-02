@@ -11,6 +11,7 @@ export const useDirectJoin = (MrMatch: MatchMaker) => {
         const roomCode = interaction.options.getString('roomcode', true);
 
         MrMatch.joinDirect(name, roomCode);
+        interaction.reply({ content: `you have joined ${roomCode} you and the host will be removed from the list`});
         console.log(`${name} joining ${roomCode}`)
     };
 
