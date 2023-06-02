@@ -74,6 +74,10 @@ export class MatchMaker {
 
         const hostIndex = this.PlayerList.findIndex((player) => player.name === hostName);
         this.PlayerList[hostIndex].waiting = false;
+
+        if (this.FastList.includes(player)) {
+            this.leaveList(player);
+        }
     }
 
     public leaveList(name: string) {
@@ -102,12 +106,13 @@ export class MatchMaker {
         return undefined;
     }
 
-    public async matchMake() {
+    public async matchMakeIteratively() {
         const waitingList = this.PlayerList.filter((player) => player.waiting);
         waitingList.forEach((player) => {
             const match = this.findMatch(player.options);
+
             if (match) {
-                this.joinDirect(player.name, match?.roomCode);
+                this.joinDirect(player.name, match.roomCode);
             }
         });
     }
