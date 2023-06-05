@@ -62,7 +62,18 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         const hostId = interaction.user.id;
         await thread.members.add(hostId);
 
-        thread.send(`The room code is ${roomCode}`);
+        thread.send(
+            'Welcome Net Battler The room settings are\n'
+                .concat(
+                    `Room Code: ${roomCode}\n`
+                ).concat(
+                    `Battle Format: ${format}\n`
+                ).concat(
+                    `Patch cards are ${patchCards ? 'enabled' : 'disabled'}\n`
+                ).concat(
+                    `The host is located in ${region}`
+                )
+        );
 
         console.log(`Match Appended ${host} ${roomCode} Thread: ${threadName}`);
     }

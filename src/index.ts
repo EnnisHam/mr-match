@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, Routes, Interaction, TextChannel } from 'discord.js';
+import { Client, Events, GatewayIntentBits, GuildMemberRoleManager, Routes, Interaction, TextChannel } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import dotenv from 'dotenv';
 
@@ -12,7 +12,7 @@ import { useListGuests, useListHosts, useListPlayers } from './commands/listPlay
 import { BattleThreadManager } from './classes/ThreadManager';
 
 // debug commands
-// import { useRemoveThread } from './commands/removeThread';
+import { useRemoveThread } from './commands/removeThread';
 
 dotenv.config();
 
@@ -73,11 +73,22 @@ async function main() {
     const [listHostsHandler, listHostsCommand] = useListHosts(MrMatch);
     const [listPlayersHandler, listPlayersCommand] = useListPlayers(MrMatch);
     const [leaveHandler, leaveCommand] = useLeave(MrMatch);
-    // const [removeThreadHandler, removeThreadCommand] = useRemoveThread(BattleManager);
+    const [removeThreadHandler, removeThreadCommand] = useRemoveThread(BattleManager);
+    /**
+     * TODO: When a user joins a thread without the commands register them to the 
+     * match and clean up?
+     */
 
     client.on('interactionCreate', async (interaction) => {
         if (!interaction.isChatInputCommand()) return;
         const commandName = interaction.commandName;
+
+        const userRoles = interaction.member?.roles as GuildMemberRoleManager;
+
+        if (!userRoles.cache.some((role) => role.name === 'Hikari Badge')) {
+            interaction.reply('Sorry kid Net Battlers only');
+            return;
+        }
 
         console.log(`dispatching ${commandName}`);
 
@@ -96,7 +107,15 @@ async function main() {
         if (commandName === 'list-guests') listGuestsHandler(interaction);
         if (commandName === 'list-players') listPlayersHandler(interaction);
 
-        // if (commandName === 'delete-thread') removeThreadHandler(interaction);
+        /**
+         * I'm pretty sure there's a vulnerability exposed by handling permissions
+         * like this but the threads are not important so it should be fine.
+         */
+        if (!userRoles.cache.some((role) => role.name === 'Bot Mechanic')) {
+            return;
+        }
+
+        if (commandName === 'delete-thread') removeThreadHandler(interaction);
     });
 
     const commands = [
@@ -108,7 +127,7 @@ async function main() {
         { ...listHostsCommand },
         { ...listGuestsCommand },
         { ...listPlayersCommand },
-        // { ...removeThreadCommand }
+        { ...removeThreadCommand }
     ];
 
     try {
