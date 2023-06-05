@@ -66,8 +66,10 @@ export class MatchMaker {
         const hostName = this.BattleSheet[roomCode].host; 
         this.BattleSheet[roomCode].guest = player;
 
-        const hostIndex = this.PlayerList.findIndex((player) => player.name === hostName);
-        this.PlayerList[hostIndex].waiting = false;
+        const host = this.PlayerList.find((player) => player.name === hostName);
+        if (host) {
+            host.waiting = false;
+        }
 
         if (this.FastList.includes(player)) {
             this.leaveList(player);
@@ -75,8 +77,10 @@ export class MatchMaker {
     }
 
     public leaveList(name: string) {
-        const index = this.PlayerList.findIndex((player) => player.name === name);
-        this.PlayerList[index].waiting = false;
+        const player = this.PlayerList.find((player) => player.name === name);
+        if (player) {
+            player.waiting = false;
+        }
     }
 
     public findMatch(options: RoomOptions) {
