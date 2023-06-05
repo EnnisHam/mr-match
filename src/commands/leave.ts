@@ -2,6 +2,10 @@ import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashComm
 import { MatchMaker } from "../classes/MatchMaker";
 
 export const useLeave = (MrMatch: MatchMaker) => {
+    const metadata = new SlashCommandBuilder()
+        .setName('leave')
+        .setDescription('leave list');
+
     const handler = (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
             return;
@@ -12,10 +16,6 @@ export const useLeave = (MrMatch: MatchMaker) => {
         interaction.reply({ content: `${name} has left the list`});
         console.log(`marked ${name} as no longer waiting`);
     };
-
-    const metadata = new SlashCommandBuilder()
-        .setName('leave')
-        .setDescription('leave list');
 
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }

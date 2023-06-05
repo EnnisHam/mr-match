@@ -3,6 +3,24 @@ import { RoomOptions, stringToEnumValue } from '../types/match';
 import { MatchMaker } from "../classes/MatchMaker";
 
 export const useListRooms = (MrMatch: MatchMaker) => {
+    const metadata = new SlashCommandBuilder()
+        .setName('list-rooms')
+        .setDescription('list waiting rooms')
+        .addStringOption((option) => option.setName('game').setDescription('Which game are you playing?'))
+        .addStringOption((option) => option.setName('format').setDescription('battle format')
+            .setChoices(
+                 {
+                    name: 'triples',
+                    value: 'triples'
+                },
+                {
+                    name: 'singles',
+                    value: 'singles'
+                }
+            ))
+        .addStringOption((option) => option.setName('patchcards').setDescription('enable patch cards?'))
+        .addStringOption((option) => option.setName('region').setDescription('where are you playing from?'));
+
     const handler = async (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
             return;
@@ -35,24 +53,6 @@ export const useListRooms = (MrMatch: MatchMaker) => {
             return;
         }
     };
-
-    const metadata = new SlashCommandBuilder()
-        .setName('list-rooms')
-        .setDescription('list waiting rooms')
-        .addStringOption((option) => option.setName('game').setDescription('Which game are you playing?'))
-        .addStringOption((option) => option.setName('format').setDescription('battle format')
-            .setChoices(
-                 {
-                    name: 'triples',
-                    value: 'triples'
-                },
-                {
-                    name: 'singles',
-                    value: 'singles'
-                }
-            ))
-        .addStringOption((option) => option.setName('patchcards').setDescription('enable patch cards?'))
-        .addStringOption((option) => option.setName('region').setDescription('where are you playing from?'));
 
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }
