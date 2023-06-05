@@ -34,5 +34,6 @@ export interface IPlayer {
 
 export interface IThreadArchive {
     threadName: string;
+    roomCode: string;
     created: DateTime;
 }

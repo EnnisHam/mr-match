@@ -60,7 +60,7 @@ async function main() {
 
         if (commandName === 'join-as-host') await joinAsHostHandler(interaction);
         if (commandName === 'join-as-guest') joinAsGuestHandler(interaction);
-        if (commandName === 'join') directJoinHandler(interaction);
+        if (commandName === 'join') await directJoinHandler(interaction);
         if (commandName === 'leave') leaveHandler(interaction);
 
         if (['join-as-host', 'join-as-guest', 'join', 'leave'].includes(commandName)) {

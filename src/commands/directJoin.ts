@@ -1,8 +1,8 @@
-import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js"
+import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from "discord.js"
 import { MatchMaker } from "../classes/MatchMaker";
 
 export const useDirectJoin = (MrMatch: MatchMaker) => {
-    const handler = (interaction: Interaction) => {
+    const handler = async (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
             return;
         }
@@ -11,6 +11,15 @@ export const useDirectJoin = (MrMatch: MatchMaker) => {
         const roomCode = interaction.options.getString('roomcode', true);
 
         MrMatch.joinDirect(name, roomCode);
+
+        const channel = interaction.channel as TextChannel;
+        const threadId = MrMatch.getThreads().find((thread) => thread.roomCode === roomCode)?.threadName;
+        const thread = await channel.threads.cache.find((thread) => thread.name === threadId);
+
+        if (thread?.joinable) {
+            thread.members.add(interaction.user.id);
+        }
+
         interaction.reply({ content: `you have joined ${roomCode} you and the host will be removed from the list`});
         console.log(`${name} joining ${roomCode}`)
     };
@@ -24,5 +33,5 @@ export const useDirectJoin = (MrMatch: MatchMaker) => {
                 .setRequired(true)
         );
 
-    return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
+    return [handler, metadata.toJSON()] as [(interaction: Interaction) => Promise<void>, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }

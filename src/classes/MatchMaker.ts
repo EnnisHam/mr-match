@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import crypto from 'crypto';
 import { IMatch, RoomOptions, IPlayer, IThreadArchive } from "../types/match";
 
 export class MatchMaker {
@@ -12,6 +13,24 @@ export class MatchMaker {
     private addToList(player: IPlayer) {
         this.PlayerList.push(player);
         this.FastList.push(player.name);
+    }
+
+    public createHash(input: string) {
+        const hash = crypto.createHash('sha1').update(input).digest('hex');
+        return hash;
+    }
+
+    public logThread(threadId: string,roomCode: string) {
+        const time = DateTime.now();
+        this.ThreadList.push({
+            threadName: threadId,
+            roomCode: roomCode,
+            created: time
+        });
+    }
+
+    public getThreads() {
+        return this.ThreadList;
     }
 
     public listRooms(options?: Partial<RoomOptions>)  {

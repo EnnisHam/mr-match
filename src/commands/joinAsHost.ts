@@ -24,12 +24,15 @@ export const useJoinAsHost = (MrMatch: MatchMaker) => {
         MrMatch.joinAsHost(host, roomCode, options);
         interaction.reply({ content: `added ${host} to queue`});
 
+        const threadId = MrMatch.createHash(JSON.stringify({ host, ...options, roomCode}))
         const channel = interaction.channel as TextChannel;
         const thread = await channel.threads.create({
-            name: `${roomCode}`,
+            name: `${threadId}`,
             autoArchiveDuration: 60, // 1hr; this is the minimum for some reason
             reason: `battle channel for ${roomCode}`
         });
+
+        MrMatch.logThread(threadId, roomCode);
 
         if (thread.joinable) {
             await thread.join();
