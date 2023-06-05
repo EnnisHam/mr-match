@@ -86,7 +86,7 @@ async function main() {
         if (commandName === 'join') await directJoinHandler(interaction);
         if (commandName === 'leave') leaveHandler(interaction);
 
-        if (['join-as-host', 'join-as-guest', 'join', 'leave'].includes(commandName)) {
+        if (['join-as-host', 'join-as-guest', 'join', 'leave', 'list-rooms'].includes(commandName)) {
             MrMatch.cleanUp();
             clearThreads(BattleManager, interaction);
         }
