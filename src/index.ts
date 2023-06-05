@@ -11,7 +11,8 @@ import { useListRooms } from './commands/listRooms';
 import { useListGuests, useListHosts, useListPlayers } from './commands/listPlayers';
 import { BattleThreadManager } from './classes/ThreadManager';
 
-import { useRemoveThread } from './commands/removeThread';
+// debug commands
+// import { useRemoveThread } from './commands/removeThread';
 
 dotenv.config();
 

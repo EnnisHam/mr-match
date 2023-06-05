@@ -47,10 +47,10 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         const match = MrMatch.joinAsHost(host, roomCode, options);
         interaction.reply({ content: `added ${host} to queue`});
 
-        const threadId = BattleManager.addThreadForMatch(match);
+        const threadName = BattleManager.addThreadForMatch(match);
         const channel = interaction.channel as TextChannel;
         const thread = await channel.threads.create({
-            name: `${threadId}`,
+            name: `${threadName}`,
             autoArchiveDuration: 60, // 1hr; this is the minimum for some reason
             reason: `battle channel for ${roomCode}`
         });
@@ -62,7 +62,9 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         const hostId = interaction.user.id;
         await thread.members.add(hostId);
 
-        console.log(`Match Appended ${host} ${roomCode} Thread: ${threadId}`);
+        thread.send(`The room code is ${roomCode}`);
+
+        console.log(`Match Appended ${host} ${roomCode} Thread: ${threadName}`);
     }
     
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => Promise<void>, RESTPostAPIChatInputApplicationCommandsJSONBody];
