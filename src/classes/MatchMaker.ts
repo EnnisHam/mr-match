@@ -1,4 +1,5 @@
-import { IMatch, RoomOptions, IPlayer } from "src/types/match";
+import { DateTime } from 'luxon';
+import { IMatch, RoomOptions, IPlayer, IThreadArchive } from "../types/match";
 
 export class MatchMaker {
     constructor() {}
@@ -6,6 +7,7 @@ export class MatchMaker {
     private BattleSheet: Record<string, IMatch> = {}
     private PlayerList: IPlayer[] = []
     private FastList: string[] = []
+    private ThreadList: IThreadArchive[] = [];
 
     private addToList(player: IPlayer) {
         this.PlayerList.push(player);

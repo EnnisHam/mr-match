@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 export type Platforms = 'switch' | 'playstation' | 'xbox' | 'steam' | 'tango';
 
 export enum Format {
@@ -30,3 +31,8 @@ export interface IPlayer {
     waiting?: boolean;
     options: RoomOptions;
 };
+
+export interface IThreadArchive {
+    threadName: string;
+    created: DateTime;
+}

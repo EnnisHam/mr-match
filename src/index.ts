@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, Routes } from 'discord.js';
+import { Client, Events, GatewayIntentBits, Routes, GuildTextThreadManager } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import dotenv from 'dotenv';
 
@@ -52,13 +52,13 @@ async function main() {
     const [listPlayersHandler, listPlayersCommand] = useListPlayers(MrMatch);
     const [leaveHandler, leaveCommand] = useLeave(MrMatch);
 
-    client.on('interactionCreate', (interaction) => {
+    client.on('interactionCreate', async (interaction) => {
         if (!interaction.isChatInputCommand()) return;
         const commandName = interaction.commandName;
 
         console.log(`dispatching ${commandName}`);
 
-        if (commandName === 'join-as-host') joinAsHostHandler(interaction);
+        if (commandName === 'join-as-host') await joinAsHostHandler(interaction);
         if (commandName === 'join-as-guest') joinAsGuestHandler(interaction);
         if (commandName === 'join') directJoinHandler(interaction);
         if (commandName === 'leave') leaveHandler(interaction);

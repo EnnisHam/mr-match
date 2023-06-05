@@ -1,9 +1,9 @@
-import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js"
+import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from "discord.js"
 import { stringToEnumValue } from '../types/match';
 import { MatchMaker } from "../classes/MatchMaker";
 
 export const useJoinAsHost = (MrMatch: MatchMaker) => {
-    const handler = (interaction: Interaction) => {
+    const handler = async (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
             return;
         }
@@ -23,6 +23,21 @@ export const useJoinAsHost = (MrMatch: MatchMaker) => {
 
         MrMatch.joinAsHost(host, roomCode, options);
         interaction.reply({ content: `added ${host} to queue`});
+
+        const channel = interaction.channel as TextChannel;
+        const thread = await channel.threads.create({
+            name: `${roomCode}`,
+            autoArchiveDuration: 60, // 1hr; this is the minimum for some reason
+            reason: `battle channel for ${roomCode}`
+        });
+
+        if (thread.joinable) {
+            await thread.join();
+        }
+
+        const hostId = interaction.user.id;
+        await thread.members.add(hostId);
+
         console.log(`Match Appended ${host} ${roomCode} ${JSON.stringify(options)}`);
     }
 
@@ -49,5 +64,5 @@ export const useJoinAsHost = (MrMatch: MatchMaker) => {
         .addStringOption((option) => option.setName('region').setDescription('where are you playing from?')
             .setRequired(true));
     
-    return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
+    return [handler, metadata.toJSON()] as [(interaction: Interaction) => Promise<void>, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }
