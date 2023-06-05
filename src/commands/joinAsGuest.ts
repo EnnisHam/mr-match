@@ -3,6 +3,27 @@ import { stringToEnumValue } from '../types/match';
 import { MatchMaker } from "../classes/MatchMaker";
 
 export const useJoinAsGuest = (MrMatch: MatchMaker) => {
+    const metadata = new SlashCommandBuilder()
+        .setName('join-as-guest')
+        .setDescription('join a room')
+        .addBooleanOption((option) => option.setName('patchcards').setDescription('enable patch cards?')
+            .setRequired(true))
+        .addStringOption((option) => option.setName('format').setDescription('battle format')
+            .setRequired(true)
+            .setChoices(
+                {
+                    name: 'triples',
+                    value: 'triples'
+                },
+                {
+                    name: 'singles',
+                    value: 'singles'
+                }
+            ))
+        .addStringOption((option) => option.setName('region').setDescription('where are you playing from?')
+            .setRequired(true))
+        .addStringOption((option) => option.setName('roomcode').setDescription('your room code'));
+
     const handler = (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
             return;
@@ -31,27 +52,6 @@ export const useJoinAsGuest = (MrMatch: MatchMaker) => {
         interaction.reply({ content: `added ${guest} to queue`});
         console.log(`Match Appended ${guest} ${roomCode} ${options.toString()}`);
     };
-
-    const metadata = new SlashCommandBuilder()
-        .setName('join-as-guest')
-        .setDescription('join a room')
-        .addBooleanOption((option) => option.setName('patchcards').setDescription('enable patch cards?')
-            .setRequired(true))
-        .addStringOption((option) => option.setName('format').setDescription('battle format')
-            .setRequired(true)
-            .setChoices(
-                {
-                    name: 'triples',
-                    value: 'triples'
-                },
-                {
-                    name: 'singles',
-                    value: 'singles'
-                }
-            ))
-        .addStringOption((option) => option.setName('region').setDescription('where are you playing from?')
-            .setRequired(true))
-        .addStringOption((option) => option.setName('roomcode').setDescription('your room code'));
 
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }

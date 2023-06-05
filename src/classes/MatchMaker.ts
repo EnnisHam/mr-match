@@ -1,11 +1,11 @@
-import { IMatch, RoomOptions, IPlayer } from "src/types/match";
+import { IMatch, RoomOptions, IPlayer } from "../types/match";
 
 export class MatchMaker {
-    constructor() {}
+    constructor() {};
 
-    private BattleSheet: Record<string, IMatch> = {}
-    private PlayerList: IPlayer[] = []
-    private FastList: string[] = []
+    private BattleSheet: Record<string, IMatch> = {};
+    private PlayerList: IPlayer[] = [];
+    private FastList: string[] = [];
 
     private addToList(player: IPlayer) {
         this.PlayerList.push(player);
@@ -56,6 +56,7 @@ export class MatchMaker {
         };
         this.BattleSheet[roomCode] = match;
         this.addToList({ name: player, host: true, waiting: true, options: options });
+        return match;
     }
 
     public joinAsGuest(player: string, options: RoomOptions) {
@@ -119,7 +120,7 @@ export class MatchMaker {
         delete this.BattleSheet[roomCode];
     }
 
-    public clearMatches(options?: { all?: boolean}) {
+    private clearMatches(options?: { all?: boolean}) {
         if (options?.all) this.BattleSheet = {};
 
         Object.keys(this.BattleSheet).forEach((room) => {
@@ -132,7 +133,7 @@ export class MatchMaker {
         });
     }
 
-    public clearPlayers(options?: { all?: boolean }) {
+    private clearPlayers(options?: { all?: boolean }) {
         if (options?.all) this.PlayerList = [];
         const waitingPlayers = this.PlayerList.filter((player) => player.waiting);
         const fastValues = waitingPlayers.map((player) => player.name);
@@ -140,7 +141,7 @@ export class MatchMaker {
         this.PlayerList = waitingPlayers;
         this.FastList = fastValues;
     }
-
+    
     public cleanUp(options?: { all?: boolean }) {
         this.clearPlayers(options);
         this.clearMatches(options);
