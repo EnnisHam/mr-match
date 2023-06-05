@@ -2,6 +2,10 @@ import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashComm
 import { MatchMaker } from "../classes/MatchMaker";
 
 export const useListPlayers = (MrMatch: MatchMaker) => {
+    const metadata = new SlashCommandBuilder()
+        .setName('list-players')
+        .setDescription('list all players');
+
     const handler = (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
             return;
@@ -11,14 +15,14 @@ export const useListPlayers = (MrMatch: MatchMaker) => {
         interaction.reply({content: `Players:\n${list}`});
     }
 
-    const metadata = new SlashCommandBuilder()
-        .setName('list-players')
-        .setDescription('list all players');
-
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }
 
 export const useListHosts = (MrMatch: MatchMaker) => {
+    const metadata = new SlashCommandBuilder()
+        .setName('list-hosts')
+        .setDescription('list all hosts');
+
     const handler = (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
             return;
@@ -28,14 +32,14 @@ export const useListHosts = (MrMatch: MatchMaker) => {
         interaction.reply({content: `Hosts:\n${list}`});
     }
 
-    const metadata = new SlashCommandBuilder()
-        .setName('list-hosts')
-        .setDescription('list all hosts');
-
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }
 
 export const useListGuests = (MrMatch: MatchMaker) => {
+    const metadata = new SlashCommandBuilder()
+        .setName('list-guests')
+        .setDescription('list all guests');
+
     const handler = (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
             return;
@@ -44,10 +48,6 @@ export const useListGuests = (MrMatch: MatchMaker) => {
         const list = MrMatch.listGuests().map((player) => JSON.stringify(player, null, 2));
         interaction.reply({content: `Guests:\n${list}`});
     }
-
-    const metadata = new SlashCommandBuilder()
-        .setName('list-guests')
-        .setDescription('list all guests');
 
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }

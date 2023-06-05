@@ -1,50 +1,9 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from "discord.js"
 import { stringToEnumValue } from '../types/match';
 import { MatchMaker } from "../classes/MatchMaker";
+import { BattleThreadManager } from "../classes/ThreadManager";
 
-export const useJoinAsHost = (MrMatch: MatchMaker) => {
-    const handler = async (interaction: Interaction) => {
-        if (!interaction.isChatInputCommand()) {
-            return;
-        }
-
-        const host = interaction.user.username;
-        const roomCode = interaction.options.getString('roomcode', true);
-        const format = interaction.options.getString('format', true);
-        const patchCards = interaction.options.getBoolean('patchcards', true);
-        const region = interaction.options.getString('region', true);
-
-        const options = {
-            format: stringToEnumValue(format),
-            patchCards: patchCards,
-            game: 6,
-            region: region
-        };
-
-        MrMatch.joinAsHost(host, roomCode, options);
-        interaction.reply({ content: `added ${host} to queue`});
-
-        const threadId = MrMatch.createHash(JSON.stringify({ host, ...options, roomCode}))
-        const channel = interaction.channel as TextChannel;
-        const thread = await channel.threads.create({
-            name: `${threadId}`,
-            autoArchiveDuration: 60, // 1hr; this is the minimum for some reason
-            reason: `battle channel for ${roomCode}`
-        });
-
-        MrMatch.logThread(threadId, roomCode);
-
-        if (thread.joinable) {
-            await thread.join();
-        }
-
-        const hostId = interaction.user.id;
-        await thread.members.add(hostId);
-
-        console.log(`Match Appended ${host} ${roomCode} ${JSON.stringify(options)}`);
-    }
-
-
+export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadManager) => {
     const metadata = new SlashCommandBuilder()
         .setName('join-as-host')
         .setDescription('host a game')
@@ -66,6 +25,45 @@ export const useJoinAsHost = (MrMatch: MatchMaker) => {
             ))
         .addStringOption((option) => option.setName('region').setDescription('where are you playing from?')
             .setRequired(true));
+
+    const handler = async (interaction: Interaction) => {
+        if (!interaction.isChatInputCommand()) {
+            return;
+        }
+
+        const host = interaction.user.username;
+        const roomCode = interaction.options.getString('roomcode', true);
+        const format = interaction.options.getString('format', true);
+        const patchCards = interaction.options.getBoolean('patchcards', true);
+        const region = interaction.options.getString('region', true);
+
+        const options = {
+            format: stringToEnumValue(format),
+            patchCards: patchCards,
+            game: 6,
+            region: region
+        };
+
+        const match = MrMatch.joinAsHost(host, roomCode, options);
+        interaction.reply({ content: `added ${host} to queue`});
+
+        const threadId = BattleManager.addThreadForMatch(match);
+        const channel = interaction.channel as TextChannel;
+        const thread = await channel.threads.create({
+            name: `${threadId}`,
+            autoArchiveDuration: 60, // 1hr; this is the minimum for some reason
+            reason: `battle channel for ${roomCode}`
+        });
+
+        if (thread.joinable) {
+            await thread.join();
+        }
+
+        const hostId = interaction.user.id;
+        await thread.members.add(hostId);
+
+        console.log(`Match Appended ${host} ${roomCode} Thread: ${threadId}`);
+    }
     
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => Promise<void>, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }
