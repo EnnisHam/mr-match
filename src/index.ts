@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, GuildMemberRoleManager, Routes, Interaction, TextChannel } from 'discord.js';
+import { Client, Events, GatewayIntentBits, GuildMemberRoleManager, Routes } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import dotenv from 'dotenv';
 
@@ -89,7 +89,7 @@ async function main() {
 
         if (commandName === 'list-rooms') listRoomsHandler(interaction);
         if (commandName === 'list-hosts') listHostsHandler(interaction);
-        if (commandName === 'list-guests') listGuestsHandler(interaction);
+        if (commandName === 'ist-guests') listGuestsHandler(interaction);
         if (commandName === 'list-players') listPlayersHandler(interaction);
 
         /**

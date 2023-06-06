@@ -39,6 +39,11 @@ export class BattleThreadManager {
         this.ThreadList = list;
     }
 
+    /**
+     * This includes a fall back for cleaning up threads in case the bot
+     * crashes
+     * @param interaction Discord interaction event object
+     */
     public async clearThreads(interaction: Interaction) {
         const threadList = this.getThreads();
 
