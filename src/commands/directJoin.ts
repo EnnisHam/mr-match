@@ -1,6 +1,6 @@
-import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from "discord.js"
-import { MatchMaker } from "../classes/MatchMaker";
-import { BattleThreadManager } from "../classes/ThreadManager";
+import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from 'discord.js'
+import { MatchMaker } from '../classes/MatchMaker';
+import { BattleThreadManager } from '../classes/ThreadManager';
 
 export const useDirectJoin = (MrMatch: MatchMaker, BattleManager: BattleThreadManager) => {
     const metadata = new SlashCommandBuilder()
@@ -23,8 +23,8 @@ export const useDirectJoin = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         MrMatch.joinDirect(name, roomCode);
 
         const channel = interaction.channel as TextChannel;
-        const threadId = BattleManager.getThreads().find((thread) => thread.roomCode === roomCode)?.threadName;
-        const thread = await channel.threads.cache.find((thread) => thread.name === threadId);
+        const threadName = BattleManager.getThreads().find((thread) => thread.roomCode === roomCode)?.threadName;
+        const thread = await channel.threads.cache.find((thread) => thread.name === threadName);
 
         if (thread?.joinable) {
             thread.members.add(interaction.user.id);

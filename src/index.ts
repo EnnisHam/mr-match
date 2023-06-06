@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, GuildMemberRoleManager, Routes, Interaction, TextChannel } from 'discord.js';
+import { Client, Events, GatewayIntentBits, GuildMemberRoleManager, Routes } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import dotenv from 'dotenv';
 
@@ -24,22 +24,6 @@ const MrMatch = new MatchMaker();
 const BattleManager = new BattleThreadManager();
 
 main();
-
-async function clearThreads(BattleManager: BattleThreadManager, interaction: Interaction) {
-    const threadList = BattleManager.getThreads();
-
-    await threadList.forEach(async (thread_log) => {
-        if (thread_log.created.diffNow().minutes >= 10) {
-            const channel = interaction.channel as TextChannel;
-            const thread = channel.threads.cache.find((thread) => thread.name === thread_log.threadName);
-            if (thread) {
-                await thread?.delete();
-                BattleManager.removeFromList(thread.name);
-                console.log(`deleting ${thread.name}`);
-            }
-        }
-    });
-}
 
 async function main() {
     if ([TOKEN, CLIENT_ID, GUILD_ID].includes(undefined)) {
@@ -97,14 +81,15 @@ async function main() {
         if (commandName === 'join') await directJoinHandler(interaction);
         if (commandName === 'leave') leaveHandler(interaction);
 
-        if (['join-as-host', 'join-as-guest', 'join', 'leave', 'list-rooms'].includes(commandName)) {
+        if (['join-as-host', 'join-as-guest', 'join', 'leave', 'list-rooms']
+            .includes(commandName)) {
             MrMatch.cleanUp();
-            clearThreads(BattleManager, interaction);
+            BattleManager.clearThreads(interaction);
         }
 
         if (commandName === 'list-rooms') listRoomsHandler(interaction);
         if (commandName === 'list-hosts') listHostsHandler(interaction);
-        if (commandName === 'list-guests') listGuestsHandler(interaction);
+        if (commandName === 'ist-guests') listGuestsHandler(interaction);
         if (commandName === 'list-players') listPlayersHandler(interaction);
 
         /**

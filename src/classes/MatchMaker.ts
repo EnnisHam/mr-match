@@ -1,4 +1,4 @@
-import { IMatch, RoomOptions, IPlayer } from "../types/match";
+import { IMatch, RoomOptions, IPlayer } from '../types/match';
 
 export class MatchMaker {
     constructor() {};
