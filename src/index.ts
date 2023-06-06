@@ -13,7 +13,8 @@ import { BattleThreadManager } from './classes/ThreadManager';
 
 // debug commands
 import { useRemoveThread } from './commands/removeThread';
-// import { useClearChannel } from './commands/clearChannel';
+import { useClearChannel } from './commands/clearChannel';
+import { useClearThreads } from './commands/clearChannel';
 
 dotenv.config();
 
@@ -59,7 +60,8 @@ async function main() {
     const [listPlayersHandler, listPlayersCommand] = useListPlayers(MrMatch);
     const [leaveHandler, leaveCommand] = useLeave(MrMatch);
     const [removeThreadHandler, removeThreadCommand] = useRemoveThread(BattleManager);
-    // const [clearChannelHandler, clearChannelCommand] = useClearChannel();
+    const [clearChannelHandler, clearChannelCommand] = useClearChannel();
+    const [clearThreadsHandler, clearThreadsCommand] = useClearThreads(BattleManager);
     /**
      * TODO: When a user joins a thread without the commands register them to the 
      * match and clean up?
@@ -79,27 +81,34 @@ async function main() {
 
         console.log(`dispatching ${commandName}`);
 
-        if (commandName === 'join-as-host') await joinAsHostHandler(interaction);
-        if (commandName === 'join-as-guest') joinAsGuestHandler(interaction);
-        if (commandName === 'join') await directJoinHandler(interaction);
-        if (commandName === 'leave') leaveHandler(interaction);
+        try {
+            if (commandName === 'join-as-host') await joinAsHostHandler(interaction);
+            if (commandName === 'join-as-guest') joinAsGuestHandler(interaction);
+            if (commandName === 'join') await directJoinHandler(interaction);
+            if (commandName === 'leave') leaveHandler(interaction);
 
-        if (['join-as-host', 'join-as-guest', 'join', 'leave', 'list-rooms']
-            .includes(commandName)) {
-            MrMatch.cleanUp();
-            BattleManager.clearThreads(interaction);
+            if (['join-as-host', 'join-as-guest', 'join', 'leave', 'list-rooms']
+                .includes(commandName)) {
+                MrMatch.cleanUp();
+                BattleManager.clearArchivedThreads(interaction);
+            }
+
+            if (commandName === 'list-rooms') listRoomsHandler(interaction);
+            if (commandName === 'list-hosts') listHostsHandler(interaction);
+            if (commandName === 'ist-guests') listGuestsHandler(interaction);
+            if (commandName === 'list-players') listPlayersHandler(interaction);
+
+
+            // debug stuff if you forget to take these away from your members it's
+            // your fault
+            if (commandName === 'delete-thread') removeThreadHandler(interaction);
+            if (commandName === 'clear-channel') clearChannelHandler(interaction);
+            if (commandName === 'clear-threads') clearThreadsHandler(interaction);
+        } catch(error) {
+            console.error(`Error: ${error}`);
+        } finally {
+            console.log('Command Dispatch Complete');
         }
-
-        if (commandName === 'list-rooms') listRoomsHandler(interaction);
-        if (commandName === 'list-hosts') listHostsHandler(interaction);
-        if (commandName === 'ist-guests') listGuestsHandler(interaction);
-        if (commandName === 'list-players') listPlayersHandler(interaction);
-
-
-        // debug stuff if you forget to take these away from your members it's
-        // your fault
-        if (commandName === 'delete-thread') removeThreadHandler(interaction);
-        // if (commandName === 'clear') clearChannelHandler(interaction);
     });
 
     const commands = [
@@ -112,7 +121,8 @@ async function main() {
         { ...listGuestsCommand },
         { ...listPlayersCommand },
         { ...removeThreadCommand },
-        // { ...clearChannelCommand }
+        { ...clearChannelCommand },
+        { ...clearThreadsCommand },
     ];
 
     try {

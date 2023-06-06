@@ -44,7 +44,7 @@ export class BattleThreadManager {
      * crashes
      * @param interaction Discord interaction event object
      */
-    public async clearThreads(interaction: Interaction) {
+    public async clearArchivedThreads(interaction: Interaction) {
         const threadList = this.getThreads();
 
         await threadList.forEach(async (thread_log) => {
@@ -54,9 +54,13 @@ export class BattleThreadManager {
                     (thread) => thread.name === thread_log.threadName
                 );
                 if (thread) {
-                    await thread?.delete();
+                    try {
+                        await thread.delete();
+                    } catch {
+                        console.error(`failed to delete thread ${thread.name}`);
+                    }
                     this.removeFromList(thread.name);
-                    console.log(`deleting ${thread.name}`);
+                    console.log(`deleted ${thread.name}`);
                 }
             }
         });
@@ -66,21 +70,52 @@ export class BattleThreadManager {
 
     private async clearArchived(interaction: Interaction) {
         const channel = interaction.channel as TextChannel;
-        await this.clearArchivedRecursion(channel);
+        await this.clearArchivedRecursive(channel);
     }
 
-    private async clearArchivedRecursion(channel: TextChannel) {
+    private async clearArchivedRecursive(channel: TextChannel) {
         const archived = await channel.threads.fetchArchived();
         await archived.threads.forEach(async (thread) => {
             if (thread.name.includes('Battle-Thread')) {
-                await thread.delete();
+                try {
+                    await thread.delete();
+                } catch {
+                    console.error(`failed to delete thread ${thread.name}`);
+                }
             }
         });
 
         if (archived.hasMore) {
-            this.clearArchivedRecursion(channel);
+            this.clearArchivedRecursive(channel);
         }
 
         return;
+    }
+
+    public async clearAllThreads(interaction: Interaction) {
+        const channel = interaction.channel as TextChannel;
+        await this.clearAllRecursive(channel);
+    }
+    
+    private async clearAllRecursive(channel: TextChannel) {
+        const threads = await channel.threads.fetch();
+        const filteredThreads = threads.threads.filter(
+            (thread) => thread.name.includes('Battle-Thread')
+        ).map((thread) => thread);
+
+        if (filteredThreads.length < 1) {
+            return;
+        }
+
+        await filteredThreads.forEach(async (thread) => {
+            try {
+                await thread.delete();
+            } catch {
+                console.error(`failed to delete thread ${thread.name}`);
+            }
+        });
+
+        await this.clearAllRecursive(channel);
+        await this.clearArchivedRecursive(channel);
     }
 }
