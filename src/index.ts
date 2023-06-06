@@ -13,6 +13,7 @@ import { BattleThreadManager } from './classes/ThreadManager';
 
 // debug commands
 import { useRemoveThread } from './commands/removeThread';
+import { useClearChannel } from './commands/clearChannel';
 
 dotenv.config();
 
@@ -58,6 +59,7 @@ async function main() {
     const [listPlayersHandler, listPlayersCommand] = useListPlayers(MrMatch);
     const [leaveHandler, leaveCommand] = useLeave(MrMatch);
     const [removeThreadHandler, removeThreadCommand] = useRemoveThread(BattleManager);
+    const [clearChannelHandler, clearChannelCommand] = useClearChannel();
     /**
      * TODO: When a user joins a thread without the commands register them to the 
      * match and clean up?
@@ -69,6 +71,7 @@ async function main() {
 
         const userRoles = interaction.member?.roles as GuildMemberRoleManager;
 
+        // lmao
         if (!userRoles.cache.some((role) => role.name === 'Hikari Badge')) {
             interaction.reply('Sorry kid Net Battlers only');
             return;
@@ -92,15 +95,11 @@ async function main() {
         if (commandName === 'ist-guests') listGuestsHandler(interaction);
         if (commandName === 'list-players') listPlayersHandler(interaction);
 
-        /**
-         * I'm pretty sure there's a vulnerability exposed by handling permissions
-         * like this but the threads are not important so it should be fine.
-         */
-        if (!userRoles.cache.some((role) => role.name === 'Bot Mechanic')) {
-            return;
-        }
 
+        // debug stuff if you forget to take these away from your members it's
+        // your fault
         if (commandName === 'delete-thread') removeThreadHandler(interaction);
+        if (commandName === 'clear') clearChannelHandler(interaction);
     });
 
     const commands = [
@@ -112,7 +111,8 @@ async function main() {
         { ...listHostsCommand },
         { ...listGuestsCommand },
         { ...listPlayersCommand },
-        { ...removeThreadCommand }
+        { ...removeThreadCommand },
+        { ...clearChannelCommand }
     ];
 
     try {
