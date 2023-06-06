@@ -61,7 +61,7 @@ export class BattleThreadManager {
             }
         });
 
-        this.clearArchived(interaction);
+        await this.clearArchived(interaction);
     }
 
     private async clearArchived(interaction: Interaction) {
