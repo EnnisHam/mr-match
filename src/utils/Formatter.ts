@@ -1,7 +1,7 @@
 import { codeBlock } from 'discord.js';
 import { IMatch, IPlayer } from '../types/match';
 
-export function roomInformation(match: IMatch) {
+export function roomInformation(match: IMatch, options?: { divider?: boolean }) {
     const patchCardAvailability = match.patchCards ? 'Enabled' : 'Disabled';
     const roomCode = `Room Code: ${match.roomCode}\n`;
     const format = `Battle Format: ${match.format}\n`;
@@ -14,14 +14,17 @@ export function roomInformation(match: IMatch) {
         format.length,
         patchCards.length,
         host.length
-    ].sort();
+    ];
 
-    for (let i = 0; i < textLengths[0]; i++) {
-        divider = divider + '=';
+    if (options?.divider) {
+        for (let i = 0; i < Math.max(...textLengths); i++) {
+            divider = divider + '=';
+        }
+        divider = `${divider}\n`;
     }
 
     const text
-        = `${divider}\n`
+        = divider
         + roomCode
         + format
         + patchCards
@@ -30,7 +33,7 @@ export function roomInformation(match: IMatch) {
     return codeBlock(text);
 }
 
-export function playerInformation(player: IPlayer) {
+export function playerInformation(player: IPlayer, options?: { divider?: boolean }) {
     const format = `Battle Format: ${player.options.format}\n`;
     const patchCards = `Patch Cards: ${player.options.patchCards ? 'Enabled' : 'Disabled'}\n`;
     const region = `Player Region: ${player.options.region}\n`;
@@ -44,14 +47,17 @@ export function playerInformation(player: IPlayer) {
         region.length,
         host.length,
         waiting.length
-    ].sort()
+    ];
 
-    for (let i = 0; i < textLengths[0]; i++) {
-        divider = divider + '=';
+    if (options?.divider) {
+        for (let i = 0; i < Math.max(...textLengths); i++) {
+            divider = divider + '=';
+        }
+        divider = `${divider}\n`;
     }
 
     const text
-        = `${divider}\n`
+        = divider
         + format
         + patchCards
         + region

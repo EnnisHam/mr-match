@@ -47,9 +47,8 @@ export const useListRooms = (MrMatch: MatchMaker) => {
             let message = 'List of Rooms\n';
 
             waitingRooms.forEach((room) => {
-                message = message.concat(`${roomInformation(room)}\n`);
+                message = message.concat(`${roomInformation(room, { divider: true })}\n`);
             });
-            message = message.concat('End of List');
 
             await interaction.editReply({content: message});
             return;

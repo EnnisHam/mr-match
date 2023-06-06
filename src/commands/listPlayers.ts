@@ -12,7 +12,7 @@ export const useListPlayers = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const list = MrMatch.listPlayers().map((player) => playerInformation(player));
+        const list = MrMatch.listPlayers().map((player) => playerInformation(player, { divider: true }));
         interaction.reply({content: `Players:\n${list}`});
     }
 
@@ -29,7 +29,7 @@ export const useListHosts = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const list = MrMatch.listHosts().map((player) => playerInformation(player));
+        const list = MrMatch.listHosts().map((player) => playerInformation(player, { divider: true }));
         interaction.reply({content: `Hosts:\n${list}`});
     }
 
@@ -46,7 +46,7 @@ export const useListGuests = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const list = MrMatch.listGuests().map((player) => playerInformation(player));
+        const list = MrMatch.listGuests().map((player) => playerInformation(player, { divider: true }));
         interaction.reply({content: `Guests:\n${list}`});
     }
 

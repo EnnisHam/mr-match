@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import crypto from 'crypto';
 import { IMatch, IThreadArchive } from '../types/match';
+import { Interaction, TextChannel } from 'discord.js';
 
 export class BattleThreadManager {
     constructor() {};
@@ -24,8 +25,9 @@ export class BattleThreadManager {
 
     public addThreadForMatch(match: IMatch) {
         const threadId = this.createHash(JSON.stringify(match));
-        this.logThread(threadId, match.roomCode);
-        return threadId;
+        const threadName = `Battle-Thread: ${threadId}`;
+        this.logThread(threadName, match.roomCode);
+        return threadName;
     }
 
     public getThreads() {
@@ -35,5 +37,45 @@ export class BattleThreadManager {
     public removeFromList(target: string) {
         const list = this.ThreadList.filter((thread) => thread.threadName !== target);
         this.ThreadList = list;
+    }
+
+    public async clearThreads(interaction: Interaction) {
+        const threadList = this.getThreads();
+
+        await threadList.forEach(async (thread_log) => {
+            if (thread_log.created.diffNow().minutes >= 10) {
+                const channel = interaction.channel as TextChannel;
+                const thread = channel.threads.cache.find(
+                    (thread) => thread.name === thread_log.threadName
+                );
+                if (thread) {
+                    await thread?.delete();
+                    this.removeFromList(thread.name);
+                    console.log(`deleting ${thread.name}`);
+                }
+            }
+        });
+
+        this.clearArchived(interaction);
+    }
+
+    private async clearArchived(interaction: Interaction) {
+        const channel = interaction.channel as TextChannel;
+        await this.clearArchivedRecursion(channel);
+    }
+
+    private async clearArchivedRecursion(channel: TextChannel) {
+        const archived = await channel.threads.fetchArchived();
+        await archived.threads.forEach(async (thread) => {
+            if (thread.name.includes('Battle-Thread')) {
+                await thread.delete();
+            }
+        });
+
+        if (archived.hasMore) {
+            this.clearArchivedRecursion(channel);
+        }
+
+        return;
     }
 }
