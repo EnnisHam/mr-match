@@ -13,7 +13,7 @@ import { BattleThreadManager } from './classes/ThreadManager';
 
 // debug commands
 import { useRemoveThread } from './commands/removeThread';
-import { useClearChannel } from './commands/clearChannel';
+// import { useClearChannel } from './commands/clearChannel';
 
 dotenv.config();
 
@@ -59,7 +59,7 @@ async function main() {
     const [listPlayersHandler, listPlayersCommand] = useListPlayers(MrMatch);
     const [leaveHandler, leaveCommand] = useLeave(MrMatch);
     const [removeThreadHandler, removeThreadCommand] = useRemoveThread(BattleManager);
-    const [clearChannelHandler, clearChannelCommand] = useClearChannel();
+    // const [clearChannelHandler, clearChannelCommand] = useClearChannel();
     /**
      * TODO: When a user joins a thread without the commands register them to the 
      * match and clean up?
@@ -99,7 +99,7 @@ async function main() {
         // debug stuff if you forget to take these away from your members it's
         // your fault
         if (commandName === 'delete-thread') removeThreadHandler(interaction);
-        if (commandName === 'clear') clearChannelHandler(interaction);
+        // if (commandName === 'clear') clearChannelHandler(interaction);
     });
 
     const commands = [
@@ -112,7 +112,7 @@ async function main() {
         { ...listGuestsCommand },
         { ...listPlayersCommand },
         { ...removeThreadCommand },
-        { ...clearChannelCommand }
+        // { ...clearChannelCommand }
     ];
 
     try {
