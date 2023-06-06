@@ -1,6 +1,5 @@
-import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js"
-import { stringToEnumValue } from '../types/match';
-import { MatchMaker } from "../classes/MatchMaker";
+import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js'
+import { MatchMaker } from '../classes/MatchMaker';
 
 export const useJoinAsGuest = (MrMatch: MatchMaker) => {
     const metadata = new SlashCommandBuilder()
@@ -42,7 +41,7 @@ export const useJoinAsGuest = (MrMatch: MatchMaker) => {
         const region = interaction.options.getString('region', true);
 
         const options = {
-            format: stringToEnumValue(format),
+            format: format,
             patchCards: patchCards,
             game: 6,
             region: region

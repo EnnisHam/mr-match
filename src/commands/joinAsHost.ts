@@ -1,7 +1,7 @@
-import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from "discord.js"
-import { stringToEnumValue } from '../types/match';
-import { MatchMaker } from "../classes/MatchMaker";
-import { BattleThreadManager } from "../classes/ThreadManager";
+import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from 'discord.js'
+import { MatchMaker } from '../classes/MatchMaker';
+import { BattleThreadManager } from '../classes/ThreadManager';
+import { roomInformation } from '../utils/Formatter';
 
 export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadManager) => {
     const metadata = new SlashCommandBuilder()
@@ -38,7 +38,7 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         const region = interaction.options.getString('region', true);
 
         const options = {
-            format: stringToEnumValue(format),
+            format: format,
             patchCards: patchCards,
             game: 6,
             region: region
@@ -62,18 +62,7 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         const hostId = interaction.user.id;
         await thread.members.add(hostId);
 
-        thread.send(
-            'Welcome Net Battler The room settings are\n'
-                .concat(
-                    `Room Code: ${roomCode}\n`
-                ).concat(
-                    `Battle Format: ${format}\n`
-                ).concat(
-                    `Patch cards are ${patchCards ? 'enabled' : 'disabled'}\n`
-                ).concat(
-                    `The host is located in ${region}`
-                )
-        );
+        thread.send(`Welcome Net Battler The room settings are\n${roomInformation(match)}`);
 
         console.log(`Match Appended ${host} ${roomCode} Thread: ${threadName}`);
     }

@@ -1,6 +1,7 @@
-import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js"
-import { RoomOptions, stringToEnumValue } from '../types/match';
-import { MatchMaker } from "../classes/MatchMaker";
+import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js'
+import { RoomOptions } from '../types/match';
+import { MatchMaker } from '../classes/MatchMaker';
+import { roomInformation } from '../utils/Formatter';
 
 export const useListRooms = (MrMatch: MatchMaker) => {
     const metadata = new SlashCommandBuilder()
@@ -35,10 +36,10 @@ export const useListRooms = (MrMatch: MatchMaker) => {
             const region = interaction.options.getString('region');
 
             const searchOptions: Partial<RoomOptions> = {
-                game: game ? game : undefined,
-                format: format ? stringToEnumValue(format) : undefined,
-                patchCards: patchcards ? patchcards : undefined,
-                region: region ? region : undefined,
+                game: game ?? undefined,
+                format: format ?? undefined,
+                patchCards: patchcards ?? undefined,
+                region: region ?? undefined,
             }
 
             const waitingRooms = MrMatch.listRooms(searchOptions);
@@ -46,8 +47,9 @@ export const useListRooms = (MrMatch: MatchMaker) => {
             let message = 'List of Rooms\n';
 
             waitingRooms.forEach((room) => {
-                message = message.concat(`${JSON.stringify(room, null, 2)}\n`);
+                message = message.concat(`${roomInformation(room)}\n`);
             });
+            message = message.concat('End of List');
 
             await interaction.editReply({content: message});
             return;

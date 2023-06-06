@@ -1,5 +1,5 @@
-import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from "discord.js"
-import { BattleThreadManager } from "../classes/ThreadManager";
+import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from 'discord.js'
+import { BattleThreadManager } from '../classes/ThreadManager';
 
 export const useRemoveThread = (BattleManager: BattleThreadManager) => {
     const metadata = new SlashCommandBuilder()

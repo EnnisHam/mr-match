@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import crypto from 'crypto';
-import { IMatch, IThreadArchive } from "../types/match";
+import { IMatch, IThreadArchive } from '../types/match';
 
 export class BattleThreadManager {
     constructor() {};

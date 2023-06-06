@@ -1,5 +1,6 @@
-import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from "discord.js"
-import { MatchMaker } from "../classes/MatchMaker";
+import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js';
+import { MatchMaker } from '../classes/MatchMaker';
+import { playerInformation } from '../utils/Formatter';
 
 export const useListPlayers = (MrMatch: MatchMaker) => {
     const metadata = new SlashCommandBuilder()
@@ -11,7 +12,7 @@ export const useListPlayers = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const list = MrMatch.listPlayers().map((player) => JSON.stringify(player, null, 2));
+        const list = MrMatch.listPlayers().map((player) => playerInformation(player));
         interaction.reply({content: `Players:\n${list}`});
     }
 
@@ -28,7 +29,7 @@ export const useListHosts = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const list = MrMatch.listHosts().map((player) => JSON.stringify(player, null, 2));
+        const list = MrMatch.listHosts().map((player) => playerInformation(player));
         interaction.reply({content: `Hosts:\n${list}`});
     }
 
@@ -45,7 +46,7 @@ export const useListGuests = (MrMatch: MatchMaker) => {
             return;
         }
 
-        const list = MrMatch.listGuests().map((player) => JSON.stringify(player, null, 2));
+        const list = MrMatch.listGuests().map((player) => playerInformation(player));
         interaction.reply({content: `Guests:\n${list}`});
     }
 
