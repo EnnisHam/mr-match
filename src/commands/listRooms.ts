@@ -1,5 +1,5 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js'
-import { RoomOptions, PlatformOptions } from '../types/match';
+import { RoomOptions, PlatformOptions, GameOptions } from '../types/match';
 import { MatchMaker } from '../classes/MatchMaker';
 import { roomInformation } from '../utils/Formatter';
 
@@ -11,7 +11,10 @@ export const useListRooms = (MrMatch: MatchMaker) => {
             .setChoices(
                 ...PlatformOptions
             ))
-        .addStringOption((option) => option.setName('game').setDescription('Which game are you playing?'))
+        .addStringOption((option) => option.setName('game').setDescription('enter a number between 1-6 inclusive')
+            .setChoices(
+                ...GameOptions
+            ))
         .addStringOption((option) => option.setName('format').setDescription('battle format')
             .setChoices(
                  {
@@ -34,15 +37,14 @@ export const useListRooms = (MrMatch: MatchMaker) => {
         if (interaction.commandName === 'list-rooms') {
             await interaction.deferReply();
 
-            const game = interaction.options.getNumber('game');
+            const game = interaction.options.getString('game');
             const format = interaction.options.getString('format');
             const patchcards = interaction.options.getBoolean('patchcards');
             const region = interaction.options.getString('region');
             const platform = interaction.options.getString('platform');
 
             const searchOptions: Partial<RoomOptions> = {
-
-                game: game ?? undefined,
+                game: game ? `Battle Network ${game}` : undefined,
                 format: format ?? undefined,
                 patchCards: patchcards ?? undefined,
                 region: region ?? undefined,

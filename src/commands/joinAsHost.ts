@@ -2,7 +2,7 @@ import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashComm
 import { MatchMaker } from '../classes/MatchMaker';
 import { BattleThreadManager } from '../classes/ThreadManager';
 import { roomInformation } from '../utils/Formatter';
-import { PlatformOptions, Platforms } from '../types/match';
+import { PlatformOptions, Platforms, GameOptions } from '../types/match';
 
 export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadManager) => {
     const metadata = new SlashCommandBuilder()
@@ -14,6 +14,11 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
             .setRequired(true)
             .setChoices(
                 ...PlatformOptions
+            ))
+        .addStringOption((option) => option.setName('game').setDescription('enter a number between 1-6 inclusive')
+            .setRequired(true)
+            .setChoices(
+                ...GameOptions
             ))
         .addBooleanOption((option) => option.setName('patchcards').setDescription('enable patch cards?')
             .setRequired(true))
@@ -46,6 +51,8 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
             return;
         }
 
+        const game = interaction.options.getString('game', true);
+
         const format = interaction.options.getString('format', true);
         const patchCards = interaction.options.getBoolean('patchcards', true);
         const region = interaction.options.getString('region', true);
@@ -54,8 +61,8 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
             format: format,
             platform: platform,
             patchCards: patchCards,
-            game: 6,
-            region: region
+            region: region,
+            game: `Battle Network ${game}`
         };
 
         const required = {

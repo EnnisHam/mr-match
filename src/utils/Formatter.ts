@@ -3,6 +3,7 @@ import { IMatch, IPlayer } from '../types/match';
 
 export function roomInformation(match: IMatch) {
     const name = `Host: ${match.host}\n`;
+    const game = `Game: ${match.game}\n`;
     const patchCardAvailability = match.patchCards ? 'Enabled' : 'Disabled';
     const roomCode = `Room Code: ${match.roomCode}\n`;
     const platform = `Platform: ${match.platform}\n`;
@@ -13,6 +14,7 @@ export function roomInformation(match: IMatch) {
     const text
         = name
         + platform
+        + game
         + roomCode
         + format
         + patchCards
@@ -24,6 +26,7 @@ export function roomInformation(match: IMatch) {
 export function playerInformation(player: IPlayer) {
     const name = `Player: ${player.name}\n`;
     const platform = `Platform: ${player.options.platform}\n`;
+    const game = `${player.options.game}\n`;
     const format = `Battle Format: ${player.options.format}\n`;
     const patchCards = `Patch Cards: ${player.options.patchCards ? 'Enabled' : 'Disabled'}\n`;
     const region = `Player Region: ${player.options.region}\n`;
@@ -33,6 +36,7 @@ export function playerInformation(player: IPlayer) {
     const text
         = name
         + platform
+        + game
         + format
         + patchCards
         + region
