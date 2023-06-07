@@ -5,7 +5,7 @@ config();
 main();
 
 async function main() {
-    const dataManager = new DataManager('1rXDHiyLnqOyBt082xAFJv9QN6OUqovFGeBMZM-eqGCs');
+    const dataManager = new DataManager(process.env.TARGET_SHEET!);
     await dataManager.authenticateAndLoad({
         serviceEmail: process.env.GOOGLE_SERVICE_ACCOUNT!,
         privateKey: process.env.SERVICE_ACCOUNT_PRIVATE_KEY!
