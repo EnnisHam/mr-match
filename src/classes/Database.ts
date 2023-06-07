@@ -1,8 +1,12 @@
 import { GoogleSpreadsheet, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
+import { DateTime } from 'luxon';
 
 export class DataBaseManager {
     private database: GoogleSpreadsheet;
-    private currentSheet?: GoogleSpreadsheetWorksheet;
+    private currentSheet?: {
+        sheet: GoogleSpreadsheetWorksheet,
+        acquired: DateTime
+    };
     private loadedRows?: GoogleSpreadsheetRow[];
 
     constructor(targetSheet: string) {
@@ -20,13 +24,16 @@ export class DataBaseManager {
     }
 
     public getSheet(sheetName: string) {
-        this.currentSheet = this.database.sheetsByTitle[sheetName];
-        this.cacheRows(this.currentSheet);
+        this.currentSheet = {
+            sheet: this.database.sheetsByTitle[sheetName],
+            acquired: DateTime.now()
+        }
+        this.cacheRows(this.currentSheet.sheet);
         return this.currentSheet;
     }
 
     public getHeaderKeys() {
-        const headers = this.currentSheet?.headerValues;
+        const headers = this.currentSheet?.sheet.headerValues;
         if (!headers) {
             console.error('headerValues are undefined getRows() needs to be loaded first');
             return undefined;
@@ -40,6 +47,14 @@ export class DataBaseManager {
     }
 
     public async getRows(sheet?: string): Promise<GoogleSpreadsheetRow[] | undefined> {
+
+        // if the path to minutes is undefined then just refetch the rows;
+        if ((this.currentSheet?.acquired?.diffNow().minutes ?? 5) > 4) {
+            console.log(`refetching ${this.currentSheet?.sheet.title}`);
+            const rows = await this.currentSheet?.sheet.getRows();
+            this.loadedRows = rows;
+        }
+
         if (this.loadedRows) {
             return this.loadedRows;
         }
@@ -49,11 +64,12 @@ export class DataBaseManager {
             return this.loadedRows;
         }
 
-        return await this.currentSheet?.getRows();
+        // TODO: clean up logic flow
+        return await this.currentSheet?.sheet.getRows();
     }
 
     public async addRow(rowData: { [key: string]: string }) {
-        const row = await this.currentSheet?.addRow(rowData);
+        const row = await this.currentSheet?.sheet.addRow(rowData);
         if (row) {
             this.loadedRows?.push(row);
         }

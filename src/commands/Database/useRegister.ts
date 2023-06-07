@@ -44,5 +44,5 @@ export const useRegister = (DataManager: DataBaseManager) => {
         console.log(`Registered ${player}`);
     }
     
-    return [handler, metadata.toJSON()] as [(interaction: Interaction) => Promise<void>, RESTPostAPIChatInputApplicationCommandsJSONBody];
+    return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }
