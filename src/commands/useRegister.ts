@@ -17,14 +17,17 @@ export const useRegister = (DataManager: DataBaseManager) => {
 
         const player = interaction.user.username;
         const screenshare = interaction.options.getBoolean('screenshare', true);
+        const region = interaction.options.getString('region', true);
 
         const rowData = {
             'Name': player,
-            'Can Screen Share': String(screenshare)
+            'Can Screen Share': String(screenshare),
+            'Region': region
         };
+        const rowString = JSON.stringify(rowData, null, 2);
 
-        DataManager.addRow(rowData).then((response) => console.log(`completed task for row ${response?.rowIndex}`));
-        interaction.reply({ content: `added ${JSON.stringify(rowData, null, 2)} to sheet`});
+        DataManager.addRow(rowData).then(() => console.log(`completed task for row ${rowString}`));
+        interaction.reply({ content: `added ${rowString} to sheet`});
 
         console.log(`Registered ${player}`);
     }
