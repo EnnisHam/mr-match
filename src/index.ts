@@ -3,13 +3,19 @@ import { REST } from '@discordjs/rest';
 import dotenv from 'dotenv';
 
 import { MatchMaker } from './classes/MatchMaker';
+
 import { useJoinAsHost } from './commands/joinAsHost';
 import { useJoinAsGuest } from './commands/joinAsGuest';
 import { useDirectJoin } from './commands/directJoin';
 import { useLeave } from './commands/leave';
 import { useListRooms } from './commands/listRooms';
 import { useListGuests, useListHosts, useListPlayers } from './commands/listPlayers';
+
 import { BattleThreadManager } from './classes/ThreadManager';
+
+import { DataBaseManager } from './classes/Database';
+
+import { useRegister } from './commands/useRegister';
 
 // debug commands
 import { useRemoveThread } from './commands/removeThread';
@@ -22,12 +28,18 @@ const CLIENT_ID = process.env.CLIENT;
 const GUILD_ID = process.env.GUILD;
 const TOKEN = process.env.TOKEN;
 
-const MrMatch = new MatchMaker();
-const BattleManager = new BattleThreadManager();
-
 main();
 
 async function main() {
+    const MrMatch = new MatchMaker();
+    const BattleManager = new BattleThreadManager();
+    const DataManager = new DataBaseManager(process.env.TARGET_SHEET!);
+    await DataManager.authenticateAndLoad({
+        serviceEmail: process.env.GOOGLE_SERVICE_ACCOUNT!,
+        privateKey: process.env.SERVICE_ACCOUNT_PRIVATE_KEY!
+    });
+    DataManager.getSheet('Test');
+
     if ([TOKEN, CLIENT_ID, GUILD_ID].includes(undefined)) {
         console.error('check .env file');
         return;
@@ -39,7 +51,7 @@ async function main() {
             GatewayIntentBits.GuildMessages,
             GatewayIntentBits.MessageContent,
         ]
-    })
+    });
 
     const rest = new REST({version: '10'}).setToken(TOKEN!);
 
@@ -62,6 +74,7 @@ async function main() {
     const [removeThreadHandler, removeThreadCommand] = useRemoveThread(BattleManager);
     const [clearChannelHandler, clearChannelCommand] = useClearChannel();
     const [clearThreadsHandler, clearThreadsCommand] = useClearThreads(BattleManager);
+    const [registerPlayerHandler, registerPlayerCommand] = useRegister(DataManager);
     /**
      * TODO: When a user joins a thread without the commands register them to the 
      * match and clean up?
@@ -98,6 +111,7 @@ async function main() {
             if (commandName === 'ist-guests') listGuestsHandler(interaction);
             if (commandName === 'list-players') listPlayersHandler(interaction);
 
+            if (commandName === 'register') registerPlayerHandler(interaction);
 
             // debug stuff if you forget to take these away from your members it's
             // your fault
@@ -123,13 +137,14 @@ async function main() {
         { ...removeThreadCommand },
         { ...clearChannelCommand },
         { ...clearThreadsCommand },
+        { ...registerPlayerCommand }
     ];
 
     try {
         await rest.put(Routes.applicationGuildCommands(CLIENT_ID!, GUILD_ID!), {
             body: commands,
         } );
-        client.login(TOKEN)
+        client.login(TOKEN);
     } catch (error) {
         console.error(error);
     }

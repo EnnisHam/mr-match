@@ -26,9 +26,7 @@ export const useDirectJoin = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         const threadName = BattleManager.getThreads().find((thread) => thread.roomCode === roomCode)?.threadName;
         const thread = await channel.threads.cache.find((thread) => thread.name === threadName);
 
-        if (thread?.joinable) {
-            thread.members.add(interaction.user.id);
-        }
+        thread?.members.add(interaction.user.id);
 
         interaction.reply({ content: `you have joined ${roomCode} you and the host will be removed from the list`});
         console.log(`${name} joining ${roomCode}`)
