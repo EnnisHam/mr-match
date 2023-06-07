@@ -4,21 +4,21 @@ import dotenv from 'dotenv';
 
 import { MatchMaker } from './classes/MatchMaker';
 
-import { useJoinAsHost } from './commands/joinAsHost';
-import { useJoinAsGuest } from './commands/joinAsGuest';
-import { useDirectJoin } from './commands/directJoin';
-import { useLeave } from './commands/leave';
-import { useListRooms } from './commands/listRooms';
-import { useListGuests, useListHosts, useListPlayers } from './commands/listPlayers';
+import { useJoinAsHost } from './commands/Shared/joinAsHost';
+import { useJoinAsGuest } from './commands/Shared/joinAsGuest';
+import { useDirectJoin } from './commands/Shared/directJoin';
+import { useLeave } from './commands/MrMatch/leave';
+import { useListRooms } from './commands/MrMatch/listRooms';
+import { useListGuests, useListHosts, useListPlayers } from './commands/MrMatch/listPlayers';
 
 import { BattleThreadManager } from './classes/ThreadManager';
 
 import { DataBaseManager } from './classes/Database';
 
-import { useRegister } from './commands/useRegister';
+import { useRegister } from './commands/Database/useRegister';
 
 // debug commands
-import { useRemoveThread } from './commands/removeThread';
+import { useRemoveThread } from './commands/BattleManager/removeThread';
 import { useClearChannel } from './commands/clearChannel';
 import { useClearThreads } from './commands/clearChannel';
 
@@ -95,6 +95,8 @@ async function main() {
         console.log(`dispatching ${commandName}`);
 
         try {
+            if (commandName === 'register') registerPlayerHandler(interaction);
+
             if (commandName === 'join-as-host') await joinAsHostHandler(interaction);
             if (commandName === 'join-as-guest') joinAsGuestHandler(interaction);
             if (commandName === 'join') await directJoinHandler(interaction);
@@ -110,8 +112,6 @@ async function main() {
             if (commandName === 'list-hosts') listHostsHandler(interaction);
             if (commandName === 'ist-guests') listGuestsHandler(interaction);
             if (commandName === 'list-players') listPlayersHandler(interaction);
-
-            if (commandName === 'register') registerPlayerHandler(interaction);
 
             // debug stuff if you forget to take these away from your members it's
             // your fault

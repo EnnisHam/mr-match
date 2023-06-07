@@ -1,5 +1,5 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js'
-import { MatchMaker } from '../classes/MatchMaker';
+import { MatchMaker } from '../../classes/MatchMaker';
 
 export const useLeave = (MrMatch: MatchMaker) => {
     const metadata = new SlashCommandBuilder()

@@ -1,7 +1,7 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js'
-import { RoomOptions, PlatformOptions, GameOptions } from '../types/match';
-import { MatchMaker } from '../classes/MatchMaker';
-import { roomInformation } from '../utils/Formatter';
+import { RoomOptions, PlatformOptions, GameOptions } from '../../types/match';
+import { MatchMaker } from '../../classes/MatchMaker';
+import { roomInformation } from '../../utils/Formatter';
 
 export const useListRooms = (MrMatch: MatchMaker) => {
     const metadata = new SlashCommandBuilder()

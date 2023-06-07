@@ -1,6 +1,6 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js'
-import { MatchMaker } from '../classes/MatchMaker';
-import { PlatformOptions, Platforms, GameOptions } from '../types/match';
+import { MatchMaker } from '../../classes/MatchMaker';
+import { PlatformOptions, Platforms, GameOptions } from '../../types/match';
 
 export const useJoinAsGuest = (MrMatch: MatchMaker) => {
 

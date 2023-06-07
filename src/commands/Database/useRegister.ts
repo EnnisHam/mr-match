@@ -1,13 +1,21 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js'
-import { DataBaseManager } from '../classes/Database';
+import { DataBaseManager } from '../../classes/Database';
+import { PlatformOptions } from '../../types/match';
 
 export const useRegister = (DataManager: DataBaseManager) => {
     const metadata = new SlashCommandBuilder()
         .setName('register')
         .setDescription('sign up for a league or tournament')
-        .addBooleanOption((option) => option.setName('screenshare').setDescription('your room code')
+        .addBooleanOption((option) => option.setName('screenshare').setDescription('your room code?')
             .setRequired(true))
-        .addStringOption((option) => option.setName('region').setDescription('where are you playing from?')
+        .addStringOption((option) => option.setName('platform').setDescription('what platform are you on?')
+            .setRequired(true)
+            .setChoices(
+                ...PlatformOptions
+            ))
+        .addStringOption((option) => option.setName('folder').setDescription('what is the name of your folder?')
+            .setRequired(true))
+        .addStringOption((option) => option.setName('beast').setDescription('what version of the game are you entering as?')
             .setRequired(true));
 
     const handler = (interaction: Interaction) => {
@@ -17,12 +25,16 @@ export const useRegister = (DataManager: DataBaseManager) => {
 
         const player = interaction.user.username;
         const screenshare = interaction.options.getBoolean('screenshare', true);
-        const region = interaction.options.getString('region', true);
+        const platform = interaction.options.getString('platform', true);
+        const folder = interaction.options.getString('folder', true);
+        const version = interaction.options.getString('beast', true);
 
         const rowData = {
             'Name': player,
-            'Can Screen Share': String(screenshare),
-            'Region': region
+            'Screen Share': String(screenshare),
+            'Platform': platform,
+            'Folder Name': folder,
+            'Beast Form': version
         };
         const rowString = JSON.stringify(rowData, null, 2);
 

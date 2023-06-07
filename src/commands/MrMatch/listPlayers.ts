@@ -1,6 +1,6 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js';
-import { MatchMaker } from '../classes/MatchMaker';
-import { playerInformation } from '../utils/Formatter';
+import { MatchMaker } from '../../classes/MatchMaker';
+import { playerInformation } from '../../utils/Formatter';
 
 export const useListPlayers = (MrMatch: MatchMaker) => {
     const metadata = new SlashCommandBuilder()

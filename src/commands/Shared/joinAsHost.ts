@@ -1,8 +1,8 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from 'discord.js'
-import { MatchMaker } from '../classes/MatchMaker';
-import { BattleThreadManager } from '../classes/ThreadManager';
-import { roomInformation } from '../utils/Formatter';
-import { PlatformOptions, Platforms, GameOptions } from '../types/match';
+import { MatchMaker } from '../../classes/MatchMaker';
+import { BattleThreadManager } from '../../classes/ThreadManager';
+import { roomInformation } from '../../utils/Formatter';
+import { PlatformOptions, Platforms, GameOptions } from '../../types/match';
 
 export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadManager) => {
     const metadata = new SlashCommandBuilder()
