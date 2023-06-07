@@ -1,5 +1,11 @@
 import { DateTime } from 'luxon';
-export type Platforms = 'switch' | 'playstation' | 'xbox' | 'steam' | 'tango';
+export const Platforms = ['switch' , 'playstation' , 'xbox' , 'steam' , 'tango'];
+export const PlatformOptions = Platforms.map((platform) => {
+        return {
+            name: platform,
+            value: platform
+        };
+    });
 
 export interface IMatch {
     host: string;
@@ -8,18 +14,25 @@ export interface IMatch {
     format: string;
     game: number;
     region: string;
+    platform: string;
     guest?: string;
 }
 
 export type RoomOptions = Pick<IMatch, 
     'format' |
     'patchCards' |
+    'platform' |
     'game' |
     'region' 
+>
+export type RoomRequirements = Pick<IMatch, 
+    'host' |
+    'roomCode' 
 >
 
 export interface IPlayer {
     name: string;
+    platform: string;
     host?: boolean;
     waiting?: boolean;
     options: RoomOptions;

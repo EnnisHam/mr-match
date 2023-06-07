@@ -1,4 +1,4 @@
-import { IMatch, RoomOptions, IPlayer } from '../types/match';
+import { IMatch, RoomOptions, IPlayer, RoomRequirements } from '../types/match';
 
 export class MatchMaker {
     constructor() {};
@@ -48,19 +48,18 @@ export class MatchMaker {
         return this.PlayerList;
     }
 
-    public joinAsHost(player: string, roomCode: string, options: RoomOptions) {
+    public joinAsHost(required: RoomRequirements, options: RoomOptions) {
         const match = {
-            host: player,
-            roomCode: roomCode,
+            ...required,
             ...options
         };
-        this.BattleSheet[roomCode] = match;
-        this.addToList({ name: player, host: true, waiting: true, options: options });
+        this.BattleSheet[required.roomCode] = match;
+        this.addToList({ name: required.host, platform: options.platform, host: true, waiting: true, options: options });
         return match;
     }
 
     public joinAsGuest(player: string, options: RoomOptions) {
-        this.addToList({ name: player, waiting: true, options: options });
+        this.addToList({ name: player, platform: options.platform, waiting: true, options: options });
     }
 
     public joinDirect(player: string, roomCode: string) {

@@ -1,5 +1,5 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js'
-import { RoomOptions } from '../types/match';
+import { RoomOptions, PlatformOptions } from '../types/match';
 import { MatchMaker } from '../classes/MatchMaker';
 import { roomInformation } from '../utils/Formatter';
 
@@ -7,6 +7,10 @@ export const useListRooms = (MrMatch: MatchMaker) => {
     const metadata = new SlashCommandBuilder()
         .setName('list-rooms')
         .setDescription('list waiting rooms')
+        .addStringOption((option) => option.setName('platform').setDescription('What platform are you on?')
+            .setChoices(
+                ...PlatformOptions
+            ))
         .addStringOption((option) => option.setName('game').setDescription('Which game are you playing?'))
         .addStringOption((option) => option.setName('format').setDescription('battle format')
             .setChoices(
@@ -34,12 +38,15 @@ export const useListRooms = (MrMatch: MatchMaker) => {
             const format = interaction.options.getString('format');
             const patchcards = interaction.options.getBoolean('patchcards');
             const region = interaction.options.getString('region');
+            const platform = interaction.options.getString('platform');
 
             const searchOptions: Partial<RoomOptions> = {
+
                 game: game ?? undefined,
                 format: format ?? undefined,
                 patchCards: patchcards ?? undefined,
                 region: region ?? undefined,
+                platform: platform ?? undefined
             }
 
             const waitingRooms = MrMatch.listRooms(searchOptions);
@@ -47,7 +54,7 @@ export const useListRooms = (MrMatch: MatchMaker) => {
             let message = 'List of Rooms\n';
 
             waitingRooms.forEach((room) => {
-                message = message.concat(`${roomInformation(room, { divider: true })}\n`);
+                message = message.concat(`${roomInformation(room)}\n`);
             });
 
             await interaction.editReply({content: message});
