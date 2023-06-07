@@ -22,12 +22,12 @@ const CLIENT_ID = process.env.CLIENT;
 const GUILD_ID = process.env.GUILD;
 const TOKEN = process.env.TOKEN;
 
-const MrMatch = new MatchMaker();
-const BattleManager = new BattleThreadManager();
-
 main();
 
 async function main() {
+    const MrMatch = new MatchMaker();
+    const BattleManager = new BattleThreadManager();
+
     if ([TOKEN, CLIENT_ID, GUILD_ID].includes(undefined)) {
         console.error('check .env file');
         return;
@@ -39,7 +39,7 @@ async function main() {
             GatewayIntentBits.GuildMessages,
             GatewayIntentBits.MessageContent,
         ]
-    })
+    });
 
     const rest = new REST({version: '10'}).setToken(TOKEN!);
 
@@ -98,7 +98,6 @@ async function main() {
             if (commandName === 'ist-guests') listGuestsHandler(interaction);
             if (commandName === 'list-players') listPlayersHandler(interaction);
 
-
             // debug stuff if you forget to take these away from your members it's
             // your fault
             if (commandName === 'delete-thread') removeThreadHandler(interaction);
@@ -129,7 +128,7 @@ async function main() {
         await rest.put(Routes.applicationGuildCommands(CLIENT_ID!, GUILD_ID!), {
             body: commands,
         } );
-        client.login(TOKEN)
+        client.login(TOKEN);
     } catch (error) {
         console.error(error);
     }
