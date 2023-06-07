@@ -21,6 +21,7 @@ import { useRegister } from './commands/Database/useRegister';
 import { useRemoveThread } from './commands/BattleManager/removeThread';
 import { useClearChannel } from './commands/clearChannel';
 import { useClearThreads } from './commands/clearChannel';
+import { useGetRegistrants } from './commands/Database/useGetRegistrants';
 
 dotenv.config();
 
@@ -74,7 +75,9 @@ async function main() {
     const [removeThreadHandler, removeThreadCommand] = useRemoveThread(BattleManager);
     const [clearChannelHandler, clearChannelCommand] = useClearChannel();
     const [clearThreadsHandler, clearThreadsCommand] = useClearThreads(BattleManager);
+
     const [registerPlayerHandler, registerPlayerCommand] = useRegister(DataManager);
+    const [getRegistrantsHandler, getRegistrantsCommand] = useGetRegistrants(DataManager);
     /**
      * TODO: When a user joins a thread without the commands register them to the 
      * match and clean up?
@@ -96,6 +99,7 @@ async function main() {
 
         try {
             if (commandName === 'register') registerPlayerHandler(interaction);
+            if (commandName === 'get-registrants') getRegistrantsHandler(interaction);
 
             if (commandName === 'join-as-host') await joinAsHostHandler(interaction);
             if (commandName === 'join-as-guest') joinAsGuestHandler(interaction);
@@ -137,7 +141,9 @@ async function main() {
         { ...removeThreadCommand },
         { ...clearChannelCommand },
         { ...clearThreadsCommand },
-        { ...registerPlayerCommand }
+
+        { ...registerPlayerCommand },
+        { ...getRegistrantsCommand }
     ];
 
     try {
