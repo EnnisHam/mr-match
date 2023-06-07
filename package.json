@@ -1,4 +1,5 @@
 {
+  "license": "GPL3",
   "scripts": {
     "start": "ts-node src/index.ts"
   },
