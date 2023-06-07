@@ -39,7 +39,7 @@ async function main() {
         serviceEmail: process.env.GOOGLE_SERVICE_ACCOUNT!,
         privateKey: process.env.SERVICE_ACCOUNT_PRIVATE_KEY!
     });
-    DataManager.getSheet('Test');
+    DataManager.getSheet('Registry');
 
     if ([TOKEN, CLIENT_ID, GUILD_ID].includes(undefined)) {
         console.error('check .env file');

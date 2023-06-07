@@ -50,6 +50,7 @@ export class DataBaseManager {
 
         // if the path to minutes is undefined then just refetch the rows;
         if ((this.currentSheet?.acquired?.diffNow().minutes ?? 5) > 4) {
+            console.log(`refetching ${this.currentSheet?.sheet.title}`);
             const rows = await this.currentSheet?.sheet.getRows();
             this.loadedRows = rows;
         }
