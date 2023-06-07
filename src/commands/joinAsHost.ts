@@ -2,6 +2,7 @@ import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashComm
 import { MatchMaker } from '../classes/MatchMaker';
 import { BattleThreadManager } from '../classes/ThreadManager';
 import { roomInformation } from '../utils/Formatter';
+import { PlatformOptions, Platforms } from '../types/match';
 
 export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadManager) => {
     const metadata = new SlashCommandBuilder()
@@ -9,6 +10,11 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         .setDescription('host a game')
         .addStringOption((option) => option.setName('roomcode').setDescription('your room code')
             .setRequired(true))
+        .addStringOption((option) => option.setName('platform').setDescription('what platform are you on')
+            .setRequired(true)
+            .setChoices(
+                ...PlatformOptions
+            ))
         .addBooleanOption((option) => option.setName('patchcards').setDescription('enable patch cards?')
             .setRequired(true))
         .addStringOption((option) => option.setName('format').setDescription('battle format')
@@ -33,18 +39,31 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
 
         const host = interaction.user.username;
         const roomCode = interaction.options.getString('roomcode', true);
+        const platform = interaction.options.getString('platform', true);
+
+        if (!Platforms.includes(platform.toLowerCase())) {
+            interaction.reply({ content: `That doesn't look like a ${Platforms.join(' or ')} to me.`});
+            return;
+        }
+
         const format = interaction.options.getString('format', true);
         const patchCards = interaction.options.getBoolean('patchcards', true);
         const region = interaction.options.getString('region', true);
 
         const options = {
             format: format,
+            platform: platform,
             patchCards: patchCards,
             game: 6,
             region: region
         };
 
-        const match = MrMatch.joinAsHost(host, roomCode, options);
+        const required = {
+            host: host,
+            roomCode: roomCode
+        };
+
+        const match = MrMatch.joinAsHost(required, options);
         interaction.reply({ content: `added ${host} to queue`});
 
         const threadName = BattleManager.addThreadForMatch(match);
