@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import { MatchMaker } from './classes/MatchMaker';
 
 import { useJoinAsHost } from './commands/Shared/joinAsHost';
-import { useJoinAsGuest } from './commands/Shared/joinAsGuest';
+import { useJoinAsGuest } from './commands/MrMatch/joinAsGuest';
 import { useDirectJoin } from './commands/Shared/directJoin';
 import { useLeave } from './commands/MrMatch/leave';
 import { useListRooms } from './commands/MrMatch/listRooms';
