@@ -1,11 +1,11 @@
 import { config } from 'dotenv';
-import { DataManager } from './classes/Database';
+import { DataBaseManager } from './classes/Database';
 
 config();
 main();
 
 async function main() {
-    const dataManager = new DataManager(process.env.TARGET_SHEET!);
+    const dataManager = new DataBaseManager(process.env.TARGET_SHEET!);
     await dataManager.authenticateAndLoad({
         serviceEmail: process.env.GOOGLE_SERVICE_ACCOUNT!,
         privateKey: process.env.SERVICE_ACCOUNT_PRIVATE_KEY!
