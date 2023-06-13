@@ -32,8 +32,7 @@ export const useJoinAsGuest = (MrMatch: MatchMaker) => {
                 }
             ))
         .addStringOption((option) => option.setName('region').setDescription('where are you playing from?')
-            .setRequired(true))
-        .addStringOption((option) => option.setName('roomcode').setDescription('your room code'));
+            .setRequired(true));
 
     const handler = (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
@@ -41,12 +40,6 @@ export const useJoinAsGuest = (MrMatch: MatchMaker) => {
         }
 
         const guest = interaction.user.username;
-        const roomCode = interaction.options.getString('roomcode');
-
-        if (roomCode) {
-            MrMatch.joinDirect(guest, roomCode);
-            return;
-        }
 
         const platform = interaction.options.getString('platform', true);
         if (!Platforms.includes(platform.toLowerCase())) {
@@ -69,8 +62,7 @@ export const useJoinAsGuest = (MrMatch: MatchMaker) => {
         };
 
         MrMatch.joinAsGuest(guest, options);
-        interaction.reply({ content: `added ${guest} to queue`});
-        console.log(`Match Appended ${guest} ${roomCode} ${options.toString()}`);
+        interaction.reply({ content: `added ${guest} to list`});
     };
 
     return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
