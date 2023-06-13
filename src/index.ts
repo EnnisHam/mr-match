@@ -138,12 +138,13 @@ async function main() {
         { ...listHostsCommand },
         { ...listGuestsCommand },
         { ...listPlayersCommand },
-        { ...removeThreadCommand },
-        { ...clearChannelCommand },
-        { ...clearThreadsCommand },
 
-        { ...registerPlayerCommand },
-        { ...getRegistrantsCommand }
+        // { ...removeThreadCommand },
+        // { ...clearChannelCommand },
+        // { ...clearThreadsCommand },
+
+        // { ...registerPlayerCommand },
+        // { ...getRegistrantsCommand }
     ];
 
     try {

@@ -15,7 +15,7 @@ Most options should be autofillable
         * region: string
         ```
 
-* **join** -- _directand remove their room from the list_
+* **join** -- _directly join and remove their room from the list_
     - parameters 
         ```typescript
         * roomcode: string
