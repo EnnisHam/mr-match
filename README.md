@@ -6,7 +6,7 @@ Most options should be autofillable
 
 * **join-as-host** -- _create a thread and join the list as a host_
     - parameters 
-        ``` typescript
+        ```typescript
         * roomcode: string
         * platform: string
         * game: string
