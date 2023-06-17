@@ -1,4 +1,4 @@
-import { IMatch, RoomOptions, IPlayer, RoomRequirements } from '../types/match';
+import { IMatch, RoomSearchOptions, IPlayer } from '../types/match';
 
 export class MatchMaker {
     constructor() {};
@@ -10,7 +10,7 @@ export class MatchMaker {
         this.PlayerList.push(player);
     }
 
-    public listRooms(options?: Partial<RoomOptions>)  {
+    public listRooms(options?: Partial<RoomSearchOptions>)  {
         const allRooms = Object.values(this.BattleSheet);
         if (!options) {
             return allRooms;
@@ -46,18 +46,25 @@ export class MatchMaker {
         return this.PlayerList;
     }
 
-    public joinAsHost(required: RoomRequirements, options: RoomOptions) {
-        const match = {
-            ...required,
-            ...options
-        };
-        this.BattleSheet[required.roomCode] = match;
-        this.addToList({ name: required.host, platform: options.platform, host: true, waiting: true, options: options });
-        return match;
+    public joinAsHost(matchInfo: IMatch) {
+
+        this.BattleSheet[matchInfo.roomCode] = matchInfo;
+        this.addToList({
+            name: matchInfo.host,
+            platform: matchInfo.platform,
+            host: true,
+            waiting: true,
+            options: matchInfo as RoomSearchOptions
+        });
+        return matchInfo;
     }
 
-    public joinAsGuest(player: string, options: RoomOptions) {
-        this.addToList({ name: player, platform: options.platform, waiting: true, options: options });
+    public joinAsGuest(player: string, options: RoomSearchOptions) {
+        const match = this.findMatch(options);
+        if (!match) {
+            this.addToList({ name: player, platform: options.platform, waiting: true, options: options });
+        }
+
     }
 
     public joinDirect(player: string, roomCode: string) {
@@ -77,7 +84,7 @@ export class MatchMaker {
         }
     }
 
-    public findMatch(options: RoomOptions) {
+    public findMatch(options: RoomSearchOptions) {
         const filteredOptions = Object.values(this.BattleSheet).filter((room) => {
             const { format, patchCards, game, region} = room;
             const baseCheck = options.format === format 
