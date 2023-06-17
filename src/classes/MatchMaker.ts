@@ -5,11 +5,9 @@ export class MatchMaker {
 
     private BattleSheet: Record<string, IMatch> = {};
     private PlayerList: IPlayer[] = [];
-    private FastList: string[] = [];
 
     private addToList(player: IPlayer) {
         this.PlayerList.push(player);
-        this.FastList.push(player.name);
     }
 
     public listRooms(options?: Partial<RoomOptions>)  {
@@ -70,10 +68,6 @@ export class MatchMaker {
         if (host) {
             host.waiting = false;
         }
-
-        if (this.FastList.includes(player)) {
-            this.leaveList(player);
-        }
     }
 
     public leaveList(name: string) {
@@ -120,25 +114,36 @@ export class MatchMaker {
     }
 
     private clearMatches(options?: { all?: boolean}) {
-        if (options?.all) this.BattleSheet = {};
+        if (options?.all) {
+            this.BattleSheet = {};
+            return;
+        }
 
         Object.keys(this.BattleSheet).forEach((room) => {
             const guest = this.BattleSheet[room].guest;
             const host = this.BattleSheet[room].host;
 
-            if (!this.FastList.includes(host) || guest) {
+            const hostData = this.PlayerList.find((player) => player.name === host);
+
+            // if the host does not exist in the list or if the match has a guest then remove the room
+            if (!hostData || guest) {
                 delete this.BattleSheet[room];
             }
         });
     }
 
     private clearPlayers(options?: { all?: boolean }) {
-        if (options?.all) this.PlayerList = [];
-        const waitingPlayers = this.PlayerList.filter((player) => player.waiting);
-        const fastValues = waitingPlayers.map((player) => player.name);
+        if (options?.all) {
+            this.PlayerList = [];
+            return;
+        }
 
+        this.clearInactivePlayers();
+    }
+
+    private clearInactivePlayers() {
+        const waitingPlayers = this.PlayerList.filter((player) => player.waiting);
         this.PlayerList = waitingPlayers;
-        this.FastList = fastValues;
     }
     
     public cleanUp(options?: { all?: boolean }) {
