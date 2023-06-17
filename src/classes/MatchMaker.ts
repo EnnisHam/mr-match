@@ -63,8 +63,10 @@ export class MatchMaker {
         const match = this.findMatch(options);
         if (!match) {
             this.addToList({ name: player, platform: options.platform, waiting: true, options: options });
+            return;
         }
 
+        this.joinDirect(player, match.roomCode);
     }
 
     public joinDirect(player: string, roomCode: string) {
@@ -85,7 +87,7 @@ export class MatchMaker {
     }
 
     public findMatch(options: RoomSearchOptions) {
-        const filteredOptions = Object.values(this.BattleSheet).filter((room) => {
+        const match = Object.values(this.BattleSheet).find((room) => {
             const { format, patchCards, game, region} = room;
             const baseCheck = options.format === format 
                 && options.patchCards === patchCards
@@ -98,23 +100,23 @@ export class MatchMaker {
             return baseCheck;
         });
 
-        if (filteredOptions.length > 0) {
-            return filteredOptions[0];
+        if (match) {
+            return match;
         }
 
         return undefined;
     }
 
-    public async matchMakeIteratively() {
-        const waitingList = this.PlayerList.filter((player) => player.waiting);
-        waitingList.forEach((player) => {
-            const match = this.findMatch(player.options);
+    // public async matchMakeIteratively() {
+    //     const waitingList = this.PlayerList.filter((player) => player.waiting);
+    //     waitingList.forEach((player) => {
+    //         const match = this.findMatch(player.options);
 
-            if (match) {
-                this.joinDirect(player.name, match.roomCode);
-            }
-        });
-    }
+    //         if (match) {
+    //             this.joinDirect(player.name, match.roomCode);
+    //         }
+    //     });
+    // }
 
     public deleteMatch(roomCode: string) {
         delete this.BattleSheet[roomCode];
