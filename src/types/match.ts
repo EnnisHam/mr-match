@@ -24,6 +24,7 @@ export interface IMatch {
     region: string;
     platform: string;
     guest?: string;
+    created?: DateTime;
 }
 
 export type RoomSearchOptions = Partial<Pick<IMatch, 

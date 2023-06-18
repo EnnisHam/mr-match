@@ -1,4 +1,5 @@
 import { IMatch, RoomSearchOptions, IPlayer } from '../types/match';
+import { DateTime } from 'luxon';
 
 export class MatchMaker {
     constructor() {};
@@ -48,7 +49,10 @@ export class MatchMaker {
 
     public joinAsHost(matchInfo: IMatch) {
 
-        this.BattleSheet[matchInfo.roomCode] = matchInfo;
+        this.BattleSheet[matchInfo.roomCode] = {
+            ...matchInfo,
+            created: DateTime.now()
+        };
         this.addToList({
             name: matchInfo.host,
             platform: matchInfo.platform,
@@ -67,6 +71,7 @@ export class MatchMaker {
         }
 
         this.joinDirect(player, match.roomCode);
+        return match.roomCode;
     }
 
     public joinDirect(player: string, roomCode: string) {
@@ -107,17 +112,6 @@ export class MatchMaker {
         return undefined;
     }
 
-    // public async matchMakeIteratively() {
-    //     const waitingList = this.PlayerList.filter((player) => player.waiting);
-    //     waitingList.forEach((player) => {
-    //         const match = this.findMatch(player.options);
-
-    //         if (match) {
-    //             this.joinDirect(player.name, match.roomCode);
-    //         }
-    //     });
-    // }
-
     public deleteMatch(roomCode: string) {
         delete this.BattleSheet[roomCode];
     }
@@ -135,28 +129,45 @@ export class MatchMaker {
             const hostData = this.PlayerList.find((player) => player.name === host);
 
             // if the host does not exist in the list or if the match has a guest then remove the room
-            if (!hostData || guest) {
+            if (
+                !hostData ||
+                guest ||
+                (this.BattleSheet[room].created?.diffNow().minutes ?? 10) >= 10
+            ) {
+                // remove players within the target room from the list
+                const host = this.BattleSheet[room].host;
+                const guest = this.BattleSheet[room].guest;
+
+                const targetList: string[] = [host];
+
+                if (guest) {
+                    targetList.push(guest);
+                }
+
+                this.removePlayerRecursive(targetList);
+
                 delete this.BattleSheet[room];
             }
         });
     }
 
-    private clearPlayers(options?: { all?: boolean }) {
-        if (options?.all) {
-            this.PlayerList = [];
-            return;
-        }
-
-        this.clearInactivePlayers();
+    private removePlayer(target: string) {
+        const filteredList = this.PlayerList.filter((player) => player.name === target);
+        this.PlayerList = filteredList;
     }
 
-    private clearInactivePlayers() {
-        const waitingPlayers = this.PlayerList.filter((player) => player.waiting);
-        this.PlayerList = waitingPlayers;
+    private removePlayerRecursive(targetList: string[]) {
+        if (targetList.length === 1) {
+            this.removePlayer(targetList[0]);
+        }
+
+        const target = targetList[0];
+        const restOfTargets = targetList.splice(1);
+        this.removePlayer(target);
+        this.removePlayerRecursive(restOfTargets);
     }
     
     public cleanUp(options?: { all?: boolean }) {
-        this.clearPlayers(options);
         this.clearMatches(options);
     }
 }

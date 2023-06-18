@@ -1,8 +1,9 @@
-import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js'
+import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from 'discord.js'
 import { MatchMaker } from '../../classes/MatchMaker';
 import { PlatformOptions, Platforms, GameOptions } from '../../types/match';
+import { BattleThreadManager } from '../../classes/ThreadManager';
 
-export const useJoinAsGuest = (MrMatch: MatchMaker) => {
+export const useJoinAsGuest = (MrMatch: MatchMaker, BattleManager: BattleThreadManager) => {
 
     const metadata = new SlashCommandBuilder()
         .setName('join-as-guest')
@@ -34,7 +35,7 @@ export const useJoinAsGuest = (MrMatch: MatchMaker) => {
         .addStringOption((option) => option.setName('region').setDescription('where are you playing from?')
             .setRequired(true));
 
-    const handler = (interaction: Interaction) => {
+    const handler = async (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
             return;
         }
@@ -61,9 +62,24 @@ export const useJoinAsGuest = (MrMatch: MatchMaker) => {
             region: region,
         };
 
-        MrMatch.joinAsGuest(guest, options);
+        const hostCode = MrMatch.joinAsGuest(guest, options);
+        if (hostCode) {
+            // find and invite guest to host thread
+            const channel = interaction.channel as TextChannel;
+            const threadInfo = BattleManager.findThread(hostCode);
+            const thread = await channel.threads.fetch(threadInfo?.threadName!);
+
+            if (!thread) {
+                console.error(`Failed to find thread ${threadInfo?.threadName}`);
+                return;
+            }
+
+            const guestId = interaction.user.id;
+            thread.members.add(guestId);
+            thread.send(`@here your opponent has arrived`);
+        }
         interaction.reply({ content: `added ${guest} to list`});
     };
 
-    return [handler, metadata.toJSON()] as [(interaction: Interaction) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
+    return [handler, metadata.toJSON()] as [(interaction: Interaction) => Promise<void>, RESTPostAPIChatInputApplicationCommandsJSONBody];
 }

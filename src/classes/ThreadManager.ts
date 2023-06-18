@@ -23,6 +23,11 @@ export class BattleThreadManager {
         console.log(`logging thread ${JSON.stringify(data)}`);
     }
 
+    public findThread(roomCode: string) {
+        const matchingThread = this.ThreadList.find((thread) => thread.roomCode === roomCode);
+        return matchingThread;
+    }
+
     public addThreadForMatch(match: IMatch) {
         const threadId = this.createHash(JSON.stringify(match));
         const threadName = `Battle-Thread: ${threadId}`;
