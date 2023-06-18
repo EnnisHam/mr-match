@@ -1,18 +1,16 @@
-import { IMatch, RoomOptions, IPlayer, RoomRequirements } from '../types/match';
+import { IMatch, RoomSearchOptions, IPlayer } from '../types/match';
 
 export class MatchMaker {
     constructor() {};
 
     private BattleSheet: Record<string, IMatch> = {};
     private PlayerList: IPlayer[] = [];
-    private FastList: string[] = [];
 
     private addToList(player: IPlayer) {
         this.PlayerList.push(player);
-        this.FastList.push(player.name);
     }
 
-    public listRooms(options?: Partial<RoomOptions>)  {
+    public listRooms(options?: Partial<RoomSearchOptions>)  {
         const allRooms = Object.values(this.BattleSheet);
         if (!options) {
             return allRooms;
@@ -48,18 +46,27 @@ export class MatchMaker {
         return this.PlayerList;
     }
 
-    public joinAsHost(required: RoomRequirements, options: RoomOptions) {
-        const match = {
-            ...required,
-            ...options
-        };
-        this.BattleSheet[required.roomCode] = match;
-        this.addToList({ name: required.host, platform: options.platform, host: true, waiting: true, options: options });
-        return match;
+    public joinAsHost(matchInfo: IMatch) {
+
+        this.BattleSheet[matchInfo.roomCode] = matchInfo;
+        this.addToList({
+            name: matchInfo.host,
+            platform: matchInfo.platform,
+            host: true,
+            waiting: true,
+            options: matchInfo as RoomSearchOptions
+        });
+        return matchInfo;
     }
 
-    public joinAsGuest(player: string, options: RoomOptions) {
-        this.addToList({ name: player, platform: options.platform, waiting: true, options: options });
+    public joinAsGuest(player: string, options: RoomSearchOptions) {
+        const match = this.findMatch(options);
+        if (!match) {
+            this.addToList({ name: player, platform: options.platform, waiting: true, options: options });
+            return;
+        }
+
+        this.joinDirect(player, match.roomCode);
     }
 
     public joinDirect(player: string, roomCode: string) {
@@ -70,10 +77,6 @@ export class MatchMaker {
         if (host) {
             host.waiting = false;
         }
-
-        if (this.FastList.includes(player)) {
-            this.leaveList(player);
-        }
     }
 
     public leaveList(name: string) {
@@ -83,8 +86,8 @@ export class MatchMaker {
         }
     }
 
-    public findMatch(options: RoomOptions) {
-        const filteredOptions = Object.values(this.BattleSheet).filter((room) => {
+    public findMatch(options: RoomSearchOptions) {
+        const match = Object.values(this.BattleSheet).find((room) => {
             const { format, patchCards, game, region} = room;
             const baseCheck = options.format === format 
                 && options.patchCards === patchCards
@@ -97,48 +100,59 @@ export class MatchMaker {
             return baseCheck;
         });
 
-        if (filteredOptions.length > 0) {
-            return filteredOptions[0];
+        if (match) {
+            return match;
         }
 
         return undefined;
     }
 
-    public async matchMakeIteratively() {
-        const waitingList = this.PlayerList.filter((player) => player.waiting);
-        waitingList.forEach((player) => {
-            const match = this.findMatch(player.options);
+    // public async matchMakeIteratively() {
+    //     const waitingList = this.PlayerList.filter((player) => player.waiting);
+    //     waitingList.forEach((player) => {
+    //         const match = this.findMatch(player.options);
 
-            if (match) {
-                this.joinDirect(player.name, match.roomCode);
-            }
-        });
-    }
+    //         if (match) {
+    //             this.joinDirect(player.name, match.roomCode);
+    //         }
+    //     });
+    // }
 
     public deleteMatch(roomCode: string) {
         delete this.BattleSheet[roomCode];
     }
 
     private clearMatches(options?: { all?: boolean}) {
-        if (options?.all) this.BattleSheet = {};
+        if (options?.all) {
+            this.BattleSheet = {};
+            return;
+        }
 
         Object.keys(this.BattleSheet).forEach((room) => {
             const guest = this.BattleSheet[room].guest;
             const host = this.BattleSheet[room].host;
 
-            if (!this.FastList.includes(host) || guest) {
+            const hostData = this.PlayerList.find((player) => player.name === host);
+
+            // if the host does not exist in the list or if the match has a guest then remove the room
+            if (!hostData || guest) {
                 delete this.BattleSheet[room];
             }
         });
     }
 
     private clearPlayers(options?: { all?: boolean }) {
-        if (options?.all) this.PlayerList = [];
-        const waitingPlayers = this.PlayerList.filter((player) => player.waiting);
-        const fastValues = waitingPlayers.map((player) => player.name);
+        if (options?.all) {
+            this.PlayerList = [];
+            return;
+        }
 
+        this.clearInactivePlayers();
+    }
+
+    private clearInactivePlayers() {
+        const waitingPlayers = this.PlayerList.filter((player) => player.waiting);
         this.PlayerList = waitingPlayers;
-        this.FastList = fastValues;
     }
     
     public cleanUp(options?: { all?: boolean }) {

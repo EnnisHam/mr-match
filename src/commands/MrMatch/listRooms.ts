@@ -1,5 +1,5 @@
 import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js'
-import { RoomOptions, PlatformOptions, GameOptions } from '../../types/match';
+import { RoomSearchOptions, PlatformOptions, GameOptions } from '../../types/match';
 import { MatchMaker } from '../../classes/MatchMaker';
 import { roomInformation } from '../../utils/Formatter';
 
@@ -43,7 +43,7 @@ export const useListRooms = (MrMatch: MatchMaker) => {
             const region = interaction.options.getString('region');
             const platform = interaction.options.getString('platform');
 
-            const searchOptions: Partial<RoomOptions> = {
+            const searchOptions: Partial<RoomSearchOptions> = {
                 game: game ? `Battle Network ${game}` : undefined,
                 format: format ?? undefined,
                 patchCards: patchcards ?? undefined,

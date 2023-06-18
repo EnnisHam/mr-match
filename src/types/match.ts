@@ -26,24 +26,21 @@ export interface IMatch {
     guest?: string;
 }
 
-export type RoomOptions = Pick<IMatch, 
+export type RoomSearchOptions = Partial<Pick<IMatch, 
     'format' |
     'patchCards' |
     'platform' |
     'game' |
-    'region' 
->
-export type RoomRequirements = Pick<IMatch, 
-    'host' |
-    'roomCode' 
->
+    'region'|
+    'roomCode'
+>>
 
 export interface IPlayer {
     name: string;
-    platform: string;
+    platform?: string;
     host?: boolean;
     waiting?: boolean;
-    options: RoomOptions;
+    options: RoomSearchOptions;
 };
 
 export interface IThreadArchive {

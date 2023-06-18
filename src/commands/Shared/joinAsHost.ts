@@ -2,7 +2,7 @@ import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashComm
 import { MatchMaker } from '../../classes/MatchMaker';
 import { BattleThreadManager } from '../../classes/ThreadManager';
 import { roomInformation } from '../../utils/Formatter';
-import { PlatformOptions, Platforms, GameOptions } from '../../types/match';
+import { PlatformOptions, Platforms, GameOptions, IMatch } from '../../types/match';
 
 export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadManager) => {
     const metadata = new SlashCommandBuilder()
@@ -57,20 +57,17 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         const patchCards = interaction.options.getBoolean('patchcards', true);
         const region = interaction.options.getString('region', true);
 
-        const options = {
-            format: format,
+        const matchDetails: IMatch = {
+            host: host,
+            roomCode: roomCode,
             platform: platform,
             patchCards: patchCards,
+            format: format,
             region: region,
             game: `Battle Network ${game}`
         };
 
-        const required = {
-            host: host,
-            roomCode: roomCode
-        };
-
-        const match = MrMatch.joinAsHost(required, options);
+        const match = MrMatch.joinAsHost(matchDetails);
         interaction.reply({ content: `added ${host} to queue`});
 
         const threadName = BattleManager.addThreadForMatch(match);
