@@ -6,7 +6,7 @@ export const useRegister = (DataManager: DataBaseManager) => {
     const metadata = new SlashCommandBuilder()
         .setName('register')
         .setDescription('sign up for a league or tournament')
-        .addBooleanOption((option) => option.setName('screenshare').setDescription('your room code?')
+        .addBooleanOption((option) => option.setName('screenshare').setDescription('can you share your point of view in the match?')
             .setRequired(true))
         .addStringOption((option) => option.setName('platform').setDescription('what platform are you on?')
             .setRequired(true)

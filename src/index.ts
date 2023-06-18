@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import { MatchMaker } from './classes/MatchMaker';
 
 import { useJoinAsHost } from './commands/Shared/joinAsHost';
-import { useJoinAsGuest } from './commands/MrMatch/joinAsGuest';
+import { useJoinAsGuest } from './commands/Shared/joinAsGuest';
 import { useDirectJoin } from './commands/Shared/directJoin';
 import { useLeave } from './commands/MrMatch/leave';
 import { useListRooms } from './commands/MrMatch/listRooms';
@@ -65,7 +65,7 @@ async function main() {
     client.on('apiResponse', (res) => console.log(`response ${res}`));
 
     const [joinAsHostHandler, joinAsHostCommand ] = useJoinAsHost(MrMatch, BattleManager);
-    const [joinAsGuestHandler, joinAsGuestCommand ] = useJoinAsGuest(MrMatch);
+    const [joinAsGuestHandler, joinAsGuestCommand ] = useJoinAsGuest(MrMatch, BattleManager);
     const [directJoinHandler, directJoinCommand] = useDirectJoin(MrMatch, BattleManager);
     const [listRoomsHandler, listRoomsCommand] = useListRooms(MrMatch);
     const [listGuestsHandler, listGuestsCommand] = useListGuests(MrMatch);
