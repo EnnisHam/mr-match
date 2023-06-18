@@ -51,6 +51,7 @@ export const useListRooms = (MrMatch: MatchMaker) => {
                 platform: platform ?? undefined
             }
 
+            MrMatch.cleanUp();
             const waitingRooms = MrMatch.listRooms(searchOptions);
 
             let message = 'List of Rooms\n';
