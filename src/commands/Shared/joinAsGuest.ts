@@ -66,7 +66,7 @@ export const useJoinAsGuest = (MrMatch: MatchMaker, BattleManager: BattleThreadM
             // find and invite guest to host thread
             const channel = interaction.channel as TextChannel;
             const threadInfo = BattleManager.findThread(hostCode);
-            const thread = await channel.threads.fetch(threadInfo?.threadName!);
+            const thread = await channel.threads.cache.find((thread) => thread.name === threadInfo?.threadName);
 
             if (!thread) {
                 console.error(`Failed to find thread ${threadInfo?.threadName}`);
