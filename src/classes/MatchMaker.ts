@@ -144,7 +144,7 @@ export class MatchMaker {
                     targetList.push(guest);
                 }
 
-                this.removePlayerRecursive(targetList);
+                this.removePlayersIterative(targetList);
 
                 delete this.BattleSheet[room];
             }
@@ -156,15 +156,10 @@ export class MatchMaker {
         this.PlayerList = filteredList;
     }
 
-    private removePlayerRecursive(targetList: string[]) {
-        if (targetList.length === 1) {
-            this.removePlayer(targetList[0]);
-        }
-
-        const target = targetList[0];
-        const restOfTargets = targetList.splice(1);
-        this.removePlayer(target);
-        this.removePlayerRecursive(restOfTargets);
+    private removePlayersIterative(targetList: string[]) {
+        targetList.forEach((player) => {
+            this.removePlayer(player)
+        });
     }
     
     public cleanUp(options?: { all?: boolean }) {
