@@ -114,7 +114,7 @@ async function main() {
 
             if (commandName === 'list-rooms') listRoomsHandler(interaction);
             if (commandName === 'list-hosts') listHostsHandler(interaction);
-            if (commandName === 'ist-guests') listGuestsHandler(interaction);
+            if (commandName === 'list-guests') listGuestsHandler(interaction);
             if (commandName === 'list-players') listPlayersHandler(interaction);
 
             // debug stuff if you forget to take these away from your members it's
