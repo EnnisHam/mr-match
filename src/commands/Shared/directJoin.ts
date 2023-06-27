@@ -27,6 +27,7 @@ export const useDirectJoin = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         const thread = await channel.threads.cache.find((thread) => thread.name === threadName);
 
         thread?.members.add(interaction.user.id);
+        thread?.send(`@here your opponent has arrived`);
 
         interaction.reply({ content: `you have joined ${roomCode} you and the host will be removed from the list`});
         console.log(`${name} joining ${roomCode}`)

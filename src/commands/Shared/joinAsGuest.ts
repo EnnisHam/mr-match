@@ -32,8 +32,7 @@ export const useJoinAsGuest = (MrMatch: MatchMaker, BattleManager: BattleThreadM
                     value: 'singles'
                 }
             ))
-        .addStringOption((option) => option.setName('region').setDescription('where are you playing from?')
-            .setRequired(true));
+        .addStringOption((option) => option.setName('region').setDescription('where are you playing from?'));
 
     const handler = async (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) {
@@ -52,14 +51,14 @@ export const useJoinAsGuest = (MrMatch: MatchMaker, BattleManager: BattleThreadM
 
         const format = interaction.options.getString('format', true);
         const patchCards = interaction.options.getBoolean('patchcards', true);
-        const region = interaction.options.getString('region', true);
+        const region = interaction.options.getString('region');
 
         const options = {
             platform: platform,
             format: format,
             patchCards: patchCards,
             game: `Battle Network ${game}`,
-            region: region,
+            region: region ?? undefined,
         };
 
         const hostCode = MrMatch.joinAsGuest(guest, options);
@@ -67,7 +66,7 @@ export const useJoinAsGuest = (MrMatch: MatchMaker, BattleManager: BattleThreadM
             // find and invite guest to host thread
             const channel = interaction.channel as TextChannel;
             const threadInfo = BattleManager.findThread(hostCode);
-            const thread = await channel.threads.fetch(threadInfo?.threadName!);
+            const thread = await channel.threads.cache.find((thread) => thread.name === threadInfo?.threadName);
 
             if (!thread) {
                 console.error(`Failed to find thread ${threadInfo?.threadName}`);

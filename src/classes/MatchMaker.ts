@@ -157,14 +157,9 @@ export class MatchMaker {
     }
 
     private removePlayersIteratively(targetList: string[]) {
-        const newList: IPlayer[] = [];
-        this.PlayerList.forEach((player) => {
-            if (!targetList.includes(player.name)) {
-                newList.push(player);
-            }
+        targetList.forEach((player) => {
+            this.removePlayer(player)
         });
-
-        this.PlayerList = newList;
     }
     
     public cleanUp(options?: { all?: boolean }) {
