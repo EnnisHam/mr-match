@@ -69,58 +69,5 @@ export class BattleThreadManager {
                 }
             }
         });
-
-        await this.clearArchived(interaction);
-    }
-
-    private async clearArchived(interaction: Interaction) {
-        const channel = interaction.channel as TextChannel;
-        await this.clearArchivedRecursive(channel);
-    }
-
-    private async clearArchivedRecursive(channel: TextChannel) {
-        const archived = await channel.threads.fetchArchived();
-        await archived.threads.forEach(async (thread) => {
-            if (thread.name.includes('Battle-Thread')) {
-                try {
-                    await thread.delete();
-                } catch {
-                    console.error(`failed to delete thread ${thread.name}`);
-                }
-            }
-        });
-
-        if (archived.hasMore) {
-            this.clearArchivedRecursive(channel);
-        }
-
-        return;
-    }
-
-    public async clearAllThreads(interaction: Interaction) {
-        const channel = interaction.channel as TextChannel;
-        await this.clearAllRecursive(channel);
-    }
-    
-    private async clearAllRecursive(channel: TextChannel) {
-        const threads = await channel.threads.fetch();
-        const filteredThreads = threads.threads.filter(
-            (thread) => thread.name.includes('Battle-Thread')
-        ).map((thread) => thread);
-
-        if (filteredThreads.length < 1) {
-            return;
-        }
-
-        await filteredThreads.forEach(async (thread) => {
-            try {
-                await thread.delete();
-            } catch {
-                console.error(`failed to delete thread ${thread.name}`);
-            }
-        });
-
-        await this.clearAllRecursive(channel);
-        await this.clearArchivedRecursive(channel);
     }
 }

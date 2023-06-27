@@ -18,9 +18,6 @@ import { DataBaseManager } from './classes/Database';
 import { useRegister } from './commands/Database/useRegister';
 
 // debug commands
-import { useRemoveThread } from './commands/BattleManager/removeThread';
-import { useClearChannel } from './commands/clearChannel';
-import { useClearThreads } from './commands/clearChannel';
 import { useGetRegistrants } from './commands/Database/useGetRegistrants';
 
 dotenv.config();
@@ -72,9 +69,6 @@ async function main() {
     const [listHostsHandler, listHostsCommand] = useListHosts(MrMatch);
     const [listPlayersHandler, listPlayersCommand] = useListPlayers(MrMatch);
     const [leaveHandler, leaveCommand] = useLeave(MrMatch);
-    const [removeThreadHandler, removeThreadCommand] = useRemoveThread(BattleManager);
-    const [clearChannelHandler, clearChannelCommand] = useClearChannel();
-    const [clearThreadsHandler, clearThreadsCommand] = useClearThreads(BattleManager);
 
     const [registerPlayerHandler, registerPlayerCommand] = useRegister(DataManager);
     const [getRegistrantsHandler, getRegistrantsCommand] = useGetRegistrants(DataManager);
@@ -117,11 +111,6 @@ async function main() {
             if (commandName === 'ist-guests') listGuestsHandler(interaction);
             if (commandName === 'list-players') listPlayersHandler(interaction);
 
-            // debug stuff if you forget to take these away from your members it's
-            // your fault
-            if (commandName === 'delete-thread') removeThreadHandler(interaction);
-            if (commandName === 'clear-channel') clearChannelHandler(interaction);
-            if (commandName === 'clear-threads') clearThreadsHandler(interaction);
         } catch(error) {
             console.error(`Error: ${error}`);
         } finally {
@@ -138,10 +127,6 @@ async function main() {
         { ...listHostsCommand },
         { ...listGuestsCommand },
         { ...listPlayersCommand },
-
-        // { ...removeThreadCommand },
-        // { ...clearChannelCommand },
-        // { ...clearThreadsCommand },
 
         // { ...registerPlayerCommand },
         // { ...getRegistrantsCommand }
