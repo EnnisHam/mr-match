@@ -103,7 +103,6 @@ async function main() {
             if (['join-as-host', 'join-as-guest', 'join', 'leave', 'list-rooms']
                 .includes(commandName)) {
                 MrMatch.cleanUp();
-                BattleManager.clearArchivedThreads(interaction);
             }
 
             if (commandName === 'list-rooms') listRoomsHandler(interaction);

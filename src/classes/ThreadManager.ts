@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 import crypto from 'crypto';
 import { IMatch, IThreadArchive } from '../types/match';
-import { Interaction, TextChannel } from 'discord.js';
 
 export class BattleThreadManager {
     constructor() {};
@@ -42,32 +41,5 @@ export class BattleThreadManager {
     public removeFromList(target: string) {
         const list = this.ThreadList.filter((thread) => thread.threadName !== target);
         this.ThreadList = list;
-    }
-
-    /**
-     * This includes a fall back for cleaning up threads in case the bot
-     * crashes
-     * @param interaction Discord interaction event object
-     */
-    public async clearArchivedThreads(interaction: Interaction) {
-        const threadList = this.getThreads();
-
-        await threadList.forEach(async (thread_log) => {
-            if (thread_log.created.diffNow().minutes >= 10) {
-                const channel = interaction.channel as TextChannel;
-                const thread = channel.threads.cache.find(
-                    (thread) => thread.name === thread_log.threadName
-                );
-                if (thread) {
-                    try {
-                        await thread.delete();
-                    } catch {
-                        console.error(`failed to delete thread ${thread.name}`);
-                    }
-                    this.removeFromList(thread.name);
-                    console.log(`deleted ${thread.name}`);
-                }
-            }
-        });
     }
 }
