@@ -144,7 +144,7 @@ export class MatchMaker {
                     targetList.push(guest);
                 }
 
-                this.removePlayersIterative(targetList);
+                this.removePlayersIteratively(targetList);
 
                 delete this.BattleSheet[room];
             }
@@ -156,7 +156,7 @@ export class MatchMaker {
         this.PlayerList = filteredList;
     }
 
-    private removePlayersIterative(targetList: string[]) {
+    private removePlayersIteratively(targetList: string[]) {
         targetList.forEach((player) => {
             this.removePlayer(player)
         });
