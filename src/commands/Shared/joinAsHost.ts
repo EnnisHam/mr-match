@@ -73,7 +73,7 @@ export const useJoinAsHost = (MrMatch: MatchMaker, BattleManager: BattleThreadMa
         };
 
         const match = MrMatch.joinAsHost(matchDetails);
-        interaction.reply({ content: `added ${host} to queue`});
+        interaction.reply({ content: `added ${host} to queue with room code ${roomCode}`});
 
         const threadName = BattleManager.addThreadForMatch(match);
         const channel = interaction.channel as TextChannel;
