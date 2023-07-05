@@ -129,7 +129,16 @@ async function main() {
         }
     }
 
-    const adminIds: number[] = [];
+    const cleanUpAndUpdate = () => {
+        MrMatch.cleanUp();
+        if (boardMessage) {
+            updateMessageBoard(MrMatch, boardMessage);
+        }
+    }
+
+    setInterval(cleanUpAndUpdate, 300000);
+
+    const adminIds: number[] = [193213217927856129, 417041564628680715, 174603401479323649];
 
     client.on('interactionCreate', async (interaction) => {
         if (!interaction.isChatInputCommand()) return;
