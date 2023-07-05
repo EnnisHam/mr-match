@@ -1,4 +1,9 @@
-import { Interaction, RESTPostAPIChatInputApplicationCommandsJSONBody, SlashCommandBuilder, TextChannel } from 'discord.js'
+import {
+    Interaction,
+    RESTPostAPIChatInputApplicationCommandsJSONBody,
+    SlashCommandBuilder,
+    TextChannel
+} from 'discord.js'
 import { MatchMaker } from '../../classes/MatchMaker';
 import { BattleThreadManager } from '../../classes/ThreadManager';
 import { roomInformation } from '../../utils/Formatter';

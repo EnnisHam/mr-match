@@ -1,4 +1,12 @@
-import { Client, Events, GatewayIntentBits, GuildMemberRoleManager, Routes } from 'discord.js';
+import {
+    Client,
+    Events,
+    GatewayIntentBits,
+    GuildMemberRoleManager,
+    Message,
+    Routes,
+    TextChannel
+} from 'discord.js';
 import { REST } from '@discordjs/rest';
 import dotenv from 'dotenv';
 
@@ -19,12 +27,19 @@ import { useRegister } from './commands/Database/useRegister';
 
 // debug commands
 import { useGetRegistrants } from './commands/Database/useGetRegistrants';
+import { BoardInfo } from './types/match';
+import { updateMessageBoard, useCreateBoard } from './commands/MrMatch/UpdateBoard';
 
 dotenv.config();
 
 const CLIENT_ID = process.env.CLIENT;
 const GUILD_ID = process.env.GUILD;
 const TOKEN = process.env.TOKEN;
+
+const BOARD_INFO: BoardInfo = {
+    messageId: process.env.MESSAGE_BOARD_ID!,
+    channelId: process.env.CHANNEL_BOARD_ID!
+};
 
 main();
 
@@ -47,7 +62,7 @@ async function main() {
         intents: [
             GatewayIntentBits.Guilds,
             GatewayIntentBits.GuildMessages,
-            GatewayIntentBits.MessageContent,
+            GatewayIntentBits.MessageContent
         ]
     });
 
@@ -69,6 +84,7 @@ async function main() {
     const [listHostsHandler, listHostsCommand] = useListHosts(MrMatch);
     const [listPlayersHandler, listPlayersCommand] = useListPlayers(MrMatch);
     const [leaveHandler, leaveCommand] = useLeave(MrMatch);
+    const [createBoardHandler, createBoardCommand] = useCreateBoard();
 
     const [registerPlayerHandler, registerPlayerCommand] = useRegister(DataManager);
     const [getRegistrantsHandler, getRegistrantsCommand] = useGetRegistrants(DataManager);
@@ -76,6 +92,44 @@ async function main() {
      * TODO: When a user joins a thread without the commands register them to the 
      * match and clean up?
      */
+
+    const commands = [
+        { ...joinAsHostCommand },
+        { ...joinAsGuestCommand },
+        { ...directJoinCommand },
+        { ...leaveCommand },
+        { ...listRoomsCommand },
+        { ...listHostsCommand },
+        { ...listGuestsCommand },
+        { ...listPlayersCommand },
+        { ...createBoardCommand }
+
+        // { ...registerPlayerCommand },
+        // { ...getRegistrantsCommand }
+    ];
+
+    try {
+        await rest.put(Routes.applicationGuildCommands(CLIENT_ID!, GUILD_ID!), {
+            body: commands,
+        } );
+        await client.login(TOKEN);
+    } catch (error) {
+        console.error(error);
+    }
+
+    let boardMessage: Message<true> | undefined = undefined;
+    try {
+        const boardChannel = await client.channels.fetch(BOARD_INFO.channelId) as TextChannel;
+        boardMessage = await boardChannel?.messages.fetch(BOARD_INFO.messageId);
+    } catch {
+        // do nothing
+    } finally {
+        if (boardMessage) { // reset board on startup
+            updateMessageBoard(MrMatch, boardMessage);
+        }
+    }
+
+    const adminIds: number[] = [];
 
     client.on('interactionCreate', async (interaction) => {
         if (!interaction.isChatInputCommand()) return;
@@ -103,6 +157,10 @@ async function main() {
             if (['join-as-host', 'join-as-guest', 'join', 'leave', 'list-rooms']
                 .includes(commandName)) {
                 MrMatch.cleanUp();
+
+                if (boardMessage) {
+                    updateMessageBoard(MrMatch, boardMessage);
+                }
             }
 
             if (commandName === 'list-rooms') listRoomsHandler(interaction);
@@ -110,6 +168,10 @@ async function main() {
             if (commandName === 'list-guests') listGuestsHandler(interaction);
             if (commandName === 'list-players') listPlayersHandler(interaction);
 
+            const adminAllowed = adminIds.includes(Number(interaction.user.id));
+            if (adminAllowed && commandName === 'create-board') {
+                createBoardHandler(interaction);
+            }
         } catch(error) {
             console.error(`Error: ${error}`);
         } finally {
@@ -117,27 +179,5 @@ async function main() {
         }
     });
 
-    const commands = [
-        { ...joinAsHostCommand },
-        { ...joinAsGuestCommand },
-        { ...directJoinCommand },
-        { ...leaveCommand },
-        { ...listRoomsCommand },
-        { ...listHostsCommand },
-        { ...listGuestsCommand },
-        { ...listPlayersCommand },
-
-        // { ...registerPlayerCommand },
-        // { ...getRegistrantsCommand }
-    ];
-
-    try {
-        await rest.put(Routes.applicationGuildCommands(CLIENT_ID!, GUILD_ID!), {
-            body: commands,
-        } );
-        client.login(TOKEN);
-    } catch (error) {
-        console.error(error);
-    }
 }
 

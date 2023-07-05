@@ -85,9 +85,11 @@ export class MatchMaker {
     }
 
     public leaveList(name: string) {
-        const player = this.PlayerList.find((player) => player.name === name);
-        if (player) {
-            player.waiting = false;
+        this.removePlayer(name);
+        const room = Object.values(this.BattleSheet).find((room) => room.host === name);
+
+        if (room) {
+            this.deleteMatch(room?.roomCode);
         }
     }
 
@@ -152,8 +154,10 @@ export class MatchMaker {
     }
 
     private removePlayer(target: string) {
-        const filteredList = this.PlayerList.filter((player) => player.name === target);
-        this.PlayerList = filteredList;
+        const targetIndex = this.PlayerList.findIndex((player) => player.name === target);
+        if (targetIndex > -1) {
+            this.PlayerList.splice(targetIndex);
+        }
     }
 
     private removePlayersIteratively(targetList: string[]) {
