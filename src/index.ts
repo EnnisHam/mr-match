@@ -91,6 +91,30 @@ async function main() {
      * match and clean up?
      */
 
+    const commands = [
+        { ...joinAsHostCommand },
+        { ...joinAsGuestCommand },
+        { ...directJoinCommand },
+        { ...leaveCommand },
+        { ...listRoomsCommand },
+        { ...listHostsCommand },
+        { ...listGuestsCommand },
+        { ...listPlayersCommand },
+        { ...createBoardCommand }
+
+        // { ...registerPlayerCommand },
+        // { ...getRegistrantsCommand }
+    ];
+
+    try {
+        await rest.put(Routes.applicationGuildCommands(CLIENT_ID!, GUILD_ID!), {
+            body: commands,
+        } );
+        await client.login(TOKEN);
+    } catch (error) {
+        console.error(error);
+    }
+
     client.on('interactionCreate', async (interaction) => {
         if (!interaction.isChatInputCommand()) return;
         const commandName = interaction.commandName;
@@ -133,28 +157,5 @@ async function main() {
         }
     });
 
-    const commands = [
-        { ...joinAsHostCommand },
-        { ...joinAsGuestCommand },
-        { ...directJoinCommand },
-        { ...leaveCommand },
-        { ...listRoomsCommand },
-        { ...listHostsCommand },
-        { ...listGuestsCommand },
-        { ...listPlayersCommand },
-        { ...createBoardCommand }
-
-        // { ...registerPlayerCommand },
-        // { ...getRegistrantsCommand }
-    ];
-
-    try {
-        await rest.put(Routes.applicationGuildCommands(CLIENT_ID!, GUILD_ID!), {
-            body: commands,
-        } );
-        await client.login(TOKEN);
-    } catch (error) {
-        console.error(error);
-    }
 }
 
