@@ -130,6 +130,7 @@ async function main() {
     }
 
     const cleanUpAndUpdate = () => {
+        console.log('cleaning up');
         MrMatch.cleanUp();
         if (boardMessage) {
             updateMessageBoard(MrMatch, boardMessage);

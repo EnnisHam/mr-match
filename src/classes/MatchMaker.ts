@@ -129,12 +129,14 @@ export class MatchMaker {
             const host = this.BattleSheet[room].host;
 
             const hostData = this.PlayerList.find((player) => player.name === host);
+            // difference comes out as negative probably because it does created - current time instead of the otherway around
+            const timeDifference = Math.abs(this.BattleSheet[room].created?.diffNow(['minutes']).minutes ?? 5);
 
             // if the host does not exist in the list or if the match has a guest then remove the room
             if (
                 !hostData ||
                 guest ||
-                (this.BattleSheet[room].created?.diffNow().minutes ?? 10) >= 10
+                timeDifference >= 5
             ) {
                 // remove players within the target room from the list
                 const host = this.BattleSheet[room].host;
