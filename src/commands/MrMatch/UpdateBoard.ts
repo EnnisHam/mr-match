@@ -1,21 +1,15 @@
 import {
-    TextChannel,
     Message,
     Interaction,
     SlashCommandBuilder,
     RESTPostAPIChatInputApplicationCommandsJSONBody
 } from 'discord.js'
-import { FileHandle, open, readFile } from 'fs/promises';
+import { FileHandle, open } from 'fs/promises';
 import { MatchMaker } from 'src/classes/MatchMaker'
 import { roomInformation } from '../../utils/Formatter';
 
-export const findBoard = async (targetChannel: TextChannel, messageId: string) => {
-    const targetMessage = await targetChannel.messages.fetch(messageId);
-    return targetMessage;
-}
-
 export const updateMessageBoard = async (MrMatch: MatchMaker, targetMessage: Message) => {
-    let board = 'Current Users';
+    let board = 'Current Matches';
     const waitingRooms = MrMatch.listRooms();
 
     waitingRooms.forEach((room) => {

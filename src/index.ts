@@ -3,7 +3,9 @@ import {
     Events,
     GatewayIntentBits,
     GuildMemberRoleManager,
-    Routes
+    Message,
+    Routes,
+    TextChannel
 } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import dotenv from 'dotenv';
@@ -26,7 +28,7 @@ import { useRegister } from './commands/Database/useRegister';
 // debug commands
 import { useGetRegistrants } from './commands/Database/useGetRegistrants';
 import { BoardInfo } from './types/match';
-import { useCreateBoard } from './commands/MrMatch/UpdateBoard';
+import { updateMessageBoard, useCreateBoard } from './commands/MrMatch/UpdateBoard';
 
 dotenv.config();
 
@@ -115,6 +117,18 @@ async function main() {
         console.error(error);
     }
 
+    let boardMessage: Message<true> | undefined = undefined;
+    try {
+        const boardChannel = await client.channels.fetch(BOARD_INFO.channelId) as TextChannel;
+        boardMessage = await boardChannel?.messages.fetch(BOARD_INFO.messageId);
+    } catch {
+        // do nothing
+    } finally {
+        if (boardMessage) { // reset board on startup
+            updateMessageBoard(MrMatch, boardMessage);
+        }
+    }
+
     client.on('interactionCreate', async (interaction) => {
         if (!interaction.isChatInputCommand()) return;
         const commandName = interaction.commandName;
@@ -141,6 +155,10 @@ async function main() {
             if (['join-as-host', 'join-as-guest', 'join', 'leave', 'list-rooms']
                 .includes(commandName)) {
                 MrMatch.cleanUp();
+
+                if (boardMessage) {
+                    updateMessageBoard(MrMatch, boardMessage);
+                }
             }
 
             if (commandName === 'list-rooms') listRoomsHandler(interaction);
