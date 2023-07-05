@@ -1,4 +1,10 @@
-import { Client, Events, GatewayIntentBits, GuildMemberRoleManager, Routes } from 'discord.js';
+import {
+    Client,
+    Events,
+    GatewayIntentBits,
+    GuildMemberRoleManager,
+    Routes
+} from 'discord.js';
 import { REST } from '@discordjs/rest';
 import dotenv from 'dotenv';
 
@@ -19,12 +25,19 @@ import { useRegister } from './commands/Database/useRegister';
 
 // debug commands
 import { useGetRegistrants } from './commands/Database/useGetRegistrants';
+import { BoardInfo } from './types/match';
+import { useCreateBoard } from './commands/MrMatch/UpdateBoard';
 
 dotenv.config();
 
 const CLIENT_ID = process.env.CLIENT;
 const GUILD_ID = process.env.GUILD;
 const TOKEN = process.env.TOKEN;
+
+const BOARD_INFO: BoardInfo = {
+    messageId: process.env.MESSAGE_BOARD_ID!,
+    channelId: process.env.CHANNEL_BOARD_ID!
+};
 
 main();
 
@@ -47,7 +60,7 @@ async function main() {
         intents: [
             GatewayIntentBits.Guilds,
             GatewayIntentBits.GuildMessages,
-            GatewayIntentBits.MessageContent,
+            GatewayIntentBits.MessageContent
         ]
     });
 
@@ -69,6 +82,7 @@ async function main() {
     const [listHostsHandler, listHostsCommand] = useListHosts(MrMatch);
     const [listPlayersHandler, listPlayersCommand] = useListPlayers(MrMatch);
     const [leaveHandler, leaveCommand] = useLeave(MrMatch);
+    const [createBoardHandler, createBoardCommand] = useCreateBoard();
 
     const [registerPlayerHandler, registerPlayerCommand] = useRegister(DataManager);
     const [getRegistrantsHandler, getRegistrantsCommand] = useGetRegistrants(DataManager);
@@ -110,6 +124,8 @@ async function main() {
             if (commandName === 'list-guests') listGuestsHandler(interaction);
             if (commandName === 'list-players') listPlayersHandler(interaction);
 
+            if (commandName === 'create-board') createBoardHandler(interaction);
+
         } catch(error) {
             console.error(`Error: ${error}`);
         } finally {
@@ -126,6 +142,7 @@ async function main() {
         { ...listHostsCommand },
         { ...listGuestsCommand },
         { ...listPlayersCommand },
+        { ...createBoardCommand }
 
         // { ...registerPlayerCommand },
         // { ...getRegistrantsCommand }
@@ -135,7 +152,7 @@ async function main() {
         await rest.put(Routes.applicationGuildCommands(CLIENT_ID!, GUILD_ID!), {
             body: commands,
         } );
-        client.login(TOKEN);
+        await client.login(TOKEN);
     } catch (error) {
         console.error(error);
     }

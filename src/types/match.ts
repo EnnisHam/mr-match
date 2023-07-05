@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-export const Platforms = ['switch' , 'playstation' , 'xbox' , 'steam' , 'tango'];
+export const Platforms = ['switch' , 'playstation', 'steam' , 'tango'];
 export const PlatformOptions = Platforms.map((platform) => {
     return {
         name: platform,
@@ -14,6 +14,11 @@ export const GameOptions = Games.map((game) => {
         value: game
     };
 });
+
+export interface BoardInfo {
+    readonly channelId: string;
+    readonly messageId: string;
+}
 
 export interface IMatch {
     host: string;
