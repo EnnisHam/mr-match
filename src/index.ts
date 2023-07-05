@@ -129,6 +129,8 @@ async function main() {
         }
     }
 
+    const adminIds: number[] = [];
+
     client.on('interactionCreate', async (interaction) => {
         if (!interaction.isChatInputCommand()) return;
         const commandName = interaction.commandName;
@@ -166,8 +168,10 @@ async function main() {
             if (commandName === 'list-guests') listGuestsHandler(interaction);
             if (commandName === 'list-players') listPlayersHandler(interaction);
 
-            if (commandName === 'create-board') createBoardHandler(interaction);
-
+            const adminAllowed = adminIds.includes(Number(interaction.user.id));
+            if (adminAllowed && commandName === 'create-board') {
+                createBoardHandler(interaction);
+            }
         } catch(error) {
             console.error(`Error: ${error}`);
         } finally {
