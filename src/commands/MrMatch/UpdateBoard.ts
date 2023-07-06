@@ -19,6 +19,16 @@ export const updateMessageBoard = async (MrMatch: MatchMaker, targetMessage: Mes
     targetMessage.edit(board);
 }
 
+
+export const useForceUpdate = (MrMatch: MatchMaker) => {
+    const metadata = new SlashCommandBuilder()
+        .setName('force-update')
+        .setDescription('tells mr match to update the board');
+    
+    const handler = async (targetMessage: Message) => await updateMessageBoard(MrMatch, targetMessage);
+    return [handler, metadata.toJSON()] as [(message: Message) => void, RESTPostAPIChatInputApplicationCommandsJSONBody];
+}
+
 export const useCreateBoard = () => {
     const metadata = new SlashCommandBuilder()
         .setName('create-board')

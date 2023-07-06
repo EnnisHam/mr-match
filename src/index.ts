@@ -28,8 +28,8 @@ import { useRegister } from './commands/Database/useRegister';
 // debug commands
 import { useGetRegistrants } from './commands/Database/useGetRegistrants';
 import { BoardInfo } from './types/match';
-import { updateMessageBoard, useCreateBoard } from './commands/MrMatch/UpdateBoard';
 import { useExtendTimer } from './commands/MrMatch/extendTimer';
+import { updateMessageBoard, useCreateBoard, useForceUpdate } from './commands/MrMatch/UpdateBoard';
 
 dotenv.config();
 
@@ -87,6 +87,7 @@ async function main() {
     const [extendTimerHandler, extendTimerCommand] = useExtendTimer(MrMatch);
     const [leaveHandler, leaveCommand] = useLeave(MrMatch);
     const [createBoardHandler, createBoardCommand] = useCreateBoard();
+    const [forceUpdateHandler, forceUpdateCommand] = useForceUpdate(MrMatch);
 
     const [registerPlayerHandler, registerPlayerCommand] = useRegister(DataManager);
     const [getRegistrantsHandler, getRegistrantsCommand] = useGetRegistrants(DataManager);
@@ -105,7 +106,8 @@ async function main() {
         { ...listGuestsCommand },
         { ...listPlayersCommand },
         { ...createBoardCommand },
-        { ...extendTimerCommand }
+        { ...extendTimerCommand },
+        { ...forceUpdateCommand }
 
         // { ...registerPlayerCommand },
         // { ...getRegistrantsCommand }
@@ -181,6 +183,10 @@ async function main() {
             if (commandName === 'list-hosts') listHostsHandler(interaction);
             if (commandName === 'list-guests') listGuestsHandler(interaction);
             if (commandName === 'list-players') listPlayersHandler(interaction);
+            if (commandName === 'force-update' && boardMessage) {
+                interaction.reply('refreshing board; check #📝│readme-mr-match');
+                forceUpdateHandler(boardMessage);
+            }
 
             const adminAllowed = adminIds.includes(Number(interaction.user.id));
             if (adminAllowed && commandName === 'create-board') {
