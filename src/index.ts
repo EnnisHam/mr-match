@@ -29,6 +29,7 @@ import { useRegister } from './commands/Database/useRegister';
 import { useGetRegistrants } from './commands/Database/useGetRegistrants';
 import { BoardInfo } from './types/match';
 import { updateMessageBoard, useCreateBoard } from './commands/MrMatch/UpdateBoard';
+import { useExtendTimer } from './commands/MrMatch/extendTimer';
 
 dotenv.config();
 
@@ -83,6 +84,7 @@ async function main() {
     const [listGuestsHandler, listGuestsCommand] = useListGuests(MrMatch);
     const [listHostsHandler, listHostsCommand] = useListHosts(MrMatch);
     const [listPlayersHandler, listPlayersCommand] = useListPlayers(MrMatch);
+    const [extendTimerHandler, extendTimerCommand] = useExtendTimer(MrMatch);
     const [leaveHandler, leaveCommand] = useLeave(MrMatch);
     const [createBoardHandler, createBoardCommand] = useCreateBoard();
 
@@ -102,7 +104,8 @@ async function main() {
         { ...listHostsCommand },
         { ...listGuestsCommand },
         { ...listPlayersCommand },
-        { ...createBoardCommand }
+        { ...createBoardCommand },
+        { ...extendTimerCommand }
 
         // { ...registerPlayerCommand },
         // { ...getRegistrantsCommand }
@@ -163,8 +166,9 @@ async function main() {
             if (commandName === 'join-as-guest') joinAsGuestHandler(interaction);
             if (commandName === 'join') await directJoinHandler(interaction);
             if (commandName === 'leave') leaveHandler(interaction);
+            if (commandName === 'extend-timer') await extendTimerHandler(interaction);
 
-            if (['join-as-host', 'join-as-guest', 'join', 'leave', 'list-rooms']
+            if (['join-as-host', 'join-as-guest', 'join', 'leave', 'list-rooms', 'extend-timer']
                 .includes(commandName)) {
                 MrMatch.cleanUp();
 

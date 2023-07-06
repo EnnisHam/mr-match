@@ -63,6 +63,16 @@ export class MatchMaker {
         return matchInfo;
     }
 
+    public extendLifespan(player: string) {
+        const match = Object.values(this.BattleSheet).find((room) => room.host === player);
+
+        if (match) {
+            match.created = DateTime.now();
+        } else {
+            console.error(`failed to extend lifespan for ${player}`);
+        }
+    }
+
     public joinAsGuest(player: string, options: RoomSearchOptions) {
         const match = this.findMatch(options);
         if (!match) {
